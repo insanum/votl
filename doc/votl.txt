@@ -16,6 +16,7 @@ and formatted body text, tables, and support for calendar entries.
   Commands                                                     |votl-commands|
   Checkboxes                                                 |votl-checkboxes|
   Calendar                                                     |votl-calendar|
+  HTML                                                             |votl-html|
 
 ============================================================================
                                                                 *votl-license*
@@ -350,8 +351,9 @@ Formatting~
 Other~
 
   ,,-  all     Draw dashed line
-  ,,w  insert  Save changes and return to insert mode
   ,,e  normal  Execute the executable tag line under cursor
+  ,,w  insert  Save changes and return to insert mode
+  ,,W  normal  Export to HTML (foobar.votl -> foobar_votl.html)
 
 ============================================================================
                                                              *votl-checkboxes*
@@ -514,7 +516,7 @@ When you ',,cx' any lines (to complete or uncomplete it) you'll see the
 percentages automatically recalculated in each header.
 
 ============================================================================
-                                                               |votl-calendar|
+                                                               *votl-calendar*
 Calendar~
 
 votl has built in support for daily entries like a journal or diary. This
@@ -552,6 +554,14 @@ entries with the date being highlighted in a different color.
 
 If you would like to jump to today's *Journal* entry then execute ',,jt'
 which bypasses the Calendar and quickly jumps to the entry.
+
+============================================================================
+                                                                   *votl-html*
+HTML~
+
+A votl file can easily be exported to HTML using the ',,W' command. This
+export utilizes the Vim builtin |TOhtml| exporter. The final HTML will look
+exactly like the outline text in your terminal with all folds unfolded.
 
 ============================================================================
                                                                 *votl-version*

@@ -502,7 +502,7 @@ function VotlToggleFolding() "{{{
     let l:line = line(".")
 
     if foldclosed(l:line) != -1
-        normal zo
+        normal! zo
         return
     endif
 
@@ -526,7 +526,7 @@ function VotlToggleFolding() "{{{
         " nothing folded, fold all back down
         execute l:fstart.",".l:fend."foldclose!"
         for l:i in range(s:VotlIndent(l:line))
-            normal zo
+            normal! zo
         endfor
     else
         " open one more level of folds
@@ -550,18 +550,18 @@ function! VotlCalendarAction(day, month, year, week, dir) "{{{
     let l:journal = search("^Journal$", "cw")
     if l:journal == 0
         " journal not found so make one at the end of the the file
-        exe "normal GoJournal\<cr>\<esc>"
-        exe "normal i\<tab>".a:year."\<cr>\<esc>"
-        exe "normal i\<tab>\<tab>".a:year."-".l:month."\<cr>\<esc>"
-        exe "normal i\<tab>\<tab>\<tab>".l:entry_date."\<esc>"
-        normal ^zx
+        exe "normal! GoJournal\<cr>\<esc>"
+        exe "normal! i\<tab>".a:year."\<cr>\<esc>"
+        exe "normal! i\<tab>\<tab>".a:year."-".l:month."\<cr>\<esc>"
+        exe "normal! i\<tab>\<tab>\<tab>".l:entry_date."\<esc>"
+        normal! ^zx
         return
     endif
 
     " journal found now search for the entry
     if search("^\t\t\t".l:entry_date."$", "cW") != 0
         " entry found, unfold it
-        normal ^zx
+        normal! ^zx
         return
     endif
 
@@ -578,18 +578,18 @@ function! VotlCalendarAction(day, month, year, week, dir) "{{{
 
     if search("^\t".a:year."$", "cW") == 0
         " year not found
-        exe "normal zvo\<tab>".a:year."\<esc>"
-        exe "normal o\<tab>".a:year."-".l:month."\<esc>"
-        exe "normal o\<tab>".l:entry_date."\<esc>^"
+        exe "normal! zvo\<tab>".a:year."\<esc>"
+        exe "normal! o\<tab>".a:year."-".l:month."\<esc>"
+        exe "normal! o\<tab>".l:entry_date."\<esc>^"
 
         " sort the children on the year
-        normal kkk
+        normal! kkk
         normal ,,s
 
         call cursor(l:journal, 0)
         if search("^\t\t\t".l:entry_date."$", "cW") != 0
             " entry found, unfold it
-            normal ^zx
+            normal! ^zx
         endif
 
         return
@@ -599,33 +599,33 @@ function! VotlCalendarAction(day, month, year, week, dir) "{{{
 
     if search("^\t\t".a:year."-".l:month."$", "cW") == 0
         " year-month not found
-        exe "normal zvo\<tab>".a:year."-".l:month."\<esc>"
-        exe "normal o\<tab>".l:entry_date."\<esc>^"
+        exe "normal! zvo\<tab>".a:year."-".l:month."\<esc>"
+        exe "normal! o\<tab>".l:entry_date."\<esc>^"
 
         " sort the children on the year-month
-        normal kk
+        normal! kk
         normal ,,s
 
         call cursor(l:journal, 0)
         if search("^\t\t\t".l:entry_date."$", "cW") != 0
             " entry found, unfold it
-            normal ^zx
+            normal! ^zx
         endif
 
         return
     endif
 
     " year-month found, add new year-month-day entry
-    exe "normal zvo\<tab>".l:entry_date."\<esc>^"
+    exe "normal! zvo\<tab>".l:entry_date."\<esc>^"
 
     " sort the children on the year-month-day
-    normal k
+    normal! k
     normal ,,s
 
     call cursor(l:journal, 0)
     if search("^\t\t\t".l:entry_date."$", "cW") != 0
         " entry found, unfold it
-        normal ^zv
+        normal! ^zv
     endif
 endfunction "}}}
 
@@ -778,6 +778,23 @@ function! VotlComputeHowMuchDone(line) "{{{
     endif
 endfunction "}}}
 
+function! VotlToHtml() "{{{
+    let l:dest_file = expand("%:r")."_votl.html"
+    let l:savecursor = getpos(".") " save cursor
+
+    "let g:html_number_lines = 1
+
+    "let g:html_dynamic_folds = 1
+    "normal! 1ggzM
+    normal! 1ggzR
+
+    exe "TOhtml"
+    exe "w! ".l:dest_file
+    exe "q!"
+    call setpos(".", l:savecursor) " reset cursor
+    normal! zx
+endfunction "}}}
+
 " Vim Outliner Key Mappings {{{
 
 " insert the date
@@ -843,6 +860,9 @@ map <silent><buffer> <localleader>cz :call VotlComputeHowMuchDone(VotlFindRootPa
 
 " cycle over fold levels
 nmap <silent><buffer> <tab> :call VotlToggleFolding()<cr>
+
+" dump vtol to html
+nmap <silent><buffer> <localleader>W :call VotlToHtml()<cr>
 
 " End of Vim Outliner Key Mappings }}}
 
