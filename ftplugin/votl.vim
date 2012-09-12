@@ -817,6 +817,7 @@ nmap <silent><buffer> <localleader>7 :set foldlevel=6<CR>
 nmap <silent><buffer> <localleader>8 :set foldlevel=7<CR>
 nmap <silent><buffer> <localleader>9 :set foldlevel=8<CR>
 nmap <silent><buffer> <localleader>0 :set foldlevel=99999<CR>
+
 imap <silent><buffer> <localleader>w <Esc>:w<CR>a
 nmap <silent><buffer> <localleader>e :call VotlSpawn()<cr>
 

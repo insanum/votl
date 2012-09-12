@@ -244,23 +244,26 @@ are specified by object and level. These objects currently include headings,
 body text, user text, tables, and executables. See |vo-objects| for more
 information.
 
-votl comes with two color schemes. One for terminals with a light background
-and another for a dark background.
-
-To set the default color scheme just add the following to your *.vimrc* file:
->
-    " Uncomment one of these lines depending on your terminal background:
-    "set background=light
-    "set background=dark
-<
-
 To override the color scheme add the following to your *.vimrc* file (see
-|highlight| for more information):
+|highlight| for more information) and modify as needed:
 >
     function! MyVotlColors()
           highlight OL1 ctermfg=lightblue
           highlight OL2 ctermfg=red
-          ...etc...
+          highlight OL3 ctermfg=brown
+          highlight OL4 ctermfg=yellow
+          highlight OL5 ctermfg=lightblue
+          highlight OL6 ctermfg=red
+          highlight OL7 ctermfg=brown
+          highlight OL8 ctermfg=yellow
+          highlight OL8 ctermfg=white
+
+          " color for body text
+          for i in range(1, 9)
+             execute "highlight BT" . i . " ctermfg=lightgreen"
+          endfor
+
+          " ...etc...
     endfunction
     autocmd FileType votl call MyVotlColors()
 <
@@ -319,16 +322,17 @@ Checkboxes~
 
 Folding~
 
-  ,,1  all  set foldlevel=0
-  ,,2  all  set foldlevel=1
-  ,,3  all  set foldlevel=2
-  ,,4  all  set foldlevel=3
-  ,,5  all  set foldlevel=4
-  ,,6  all  set foldlevel=5
-  ,,7  all  set foldlevel=6
-  ,,8  all  set foldlevel=7
-  ,,9  all  set foldlevel=8
-  ,,0  all  set foldlevel=99999
+  <Tab>  normal  Cycle through all tab levels under heading
+  ,,1    normal  set foldlevel=0
+  ,,2    normal  set foldlevel=1
+  ,,3    normal  set foldlevel=2
+  ,,4    normal  set foldlevel=3
+  ,,5    normal  set foldlevel=4
+  ,,6    normal  set foldlevel=5
+  ,,7    normal  set foldlevel=6
+  ,,8    normal  set foldlevel=7
+  ,,9    normal  set foldlevel=8
+  ,,0    normal  set foldlevel=99999
 
 Formatting~
 
