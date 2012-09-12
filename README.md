@@ -3,7 +3,6 @@ votl
 
 Vim Outliner Plugin
 
-
 ```
 *votl.txt*	For Vim version 7.35	Last change: 2012 Sep 11
 
@@ -302,7 +301,8 @@ Movement~
 
 Calendar~
 
-  ,,cc  normal  Bring up calendar (requires calendar.vim plugin)
+  ,,jc  normal  Bring up calendar (requires calendar.vim plugin)
+  ,,jt  normal  Jump to today's journal entry
 
 Time and Date~
 
@@ -523,7 +523,7 @@ votl has built in support for daily entries like a journal or diary. This
 requires you have Yasuhiro Matsumoto's awesome Calendar plugin installed
 (http://goo.gl/cGgI).
 
-Open up your votl file and execute ',,cc'. This will bring up the calendar.
+Open up your votl file and execute ',,jc'. This will bring up the calendar.
 Type '?' to learn how to move around in the Calendar. Move the cursor over
 a date and hit <Enter>. This will jump to a special heading in your votl
 file under the top level header named *Journal* which can be located anywhere
@@ -552,6 +552,9 @@ enter a new entry it will be inserted in the proper location in the *Journal*
 Additionally, the Calendar plugin will show you which days you have journal
 entries with the date being highlighted in a different color.
 
+If you would like to jump to today's *Journal* entry then execute ',,jt'
+which bypasses the Calendar and quickly jumps to the entry.
+
 ============================================================================
                                                                 *votl-version*
 Version~
@@ -571,3 +574,4 @@ Version~
 
 vim:set filetype=help textwidth=78:
 ```
+

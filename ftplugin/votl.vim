@@ -29,8 +29,8 @@ let maplocalleader = ",,"  " this is prepended to VO key mappings
 let g:votl_use_calendar = 1
 
 if g:votl_use_calendar
-  let g:calendar_action = 'VotlCalendarAction'
-  let g:calendar_sign = 'VotlCalendarSign'
+    let g:calendar_action = 'VotlCalendarAction'
+    let g:calendar_sign = 'VotlCalendarSign'
 endif
 
 " End User Preferences }}}
@@ -62,10 +62,10 @@ set foldtext=VotlFoldText()
 " End of VimOutliner Standard Settings }}}
 
 function! s:VotlTwoDigitNum(num) "{{{
-  if a:num < 10
-    return '0'.a:num
-  endif
-  return a:num
+    if a:num < 10
+        return '0'.a:num
+    endif
+    return a:num
 endfunction "}}}
 
 " Determine the indent level of a line.
@@ -536,111 +536,124 @@ endfunction "}}}
 
 function! VotlCalendarAction(day, month, year, week, dir) "{{{
 
-  let l:day = s:VotlTwoDigitNum(a:day)
-  let l:month = s:VotlTwoDigitNum(a:month)
-  let l:entry_date = a:year.'-'.l:month.'-'.l:day
-  wincmd p
+    let l:day = s:VotlTwoDigitNum(a:day)
+    let l:month = s:VotlTwoDigitNum(a:month)
+    let l:entry_date = a:year.'-'.l:month.'-'.l:day
 
-  " search for the Journal outline (wrap search and moves cursor)
-  let l:journal = search("^Journal$", "cw")
-  if l:journal == 0
-      " journal not found so make one at the end of the the file
-      exe "normal GoJournal\<cr>\<esc>"
-      exe "normal i\<tab>".a:year."\<cr>\<esc>"
-      exe "normal i\<tab>\<tab>".a:year."-".l:month."\<cr>\<esc>"
-      exe "normal i\<tab>\<tab>\<tab>".a:year."-".l:month."-".l:day."\<esc>"
-      normal ^zx
-      return
-  endif
+    " Calendar.vim will set dir to either 'H' or 'V'
+    " If dir is 'X' then this is a call from inside votl
+    if a:dir != 'X'
+        wincmd p
+    endif
 
-  " journal found now search for the entry
-  if search("^\t\t\t".l:entry_date."$", "cW") != 0
-      " entry found, unfold it
-      normal ^zx
-      return
-  endif
+    " search for the Journal outline (wrap search and moves cursor)
+    let l:journal = search("^Journal$", "cw")
+    if l:journal == 0
+        " journal not found so make one at the end of the the file
+        exe "normal GoJournal\<cr>\<esc>"
+        exe "normal i\<tab>".a:year."\<cr>\<esc>"
+        exe "normal i\<tab>\<tab>".a:year."-".l:month."\<cr>\<esc>"
+        exe "normal i\<tab>\<tab>\<tab>".l:entry_date."\<esc>"
+        normal ^zx
+        return
+    endif
 
-  " add a new entry algorithm:
-  "   search for y
-  "   if not found then add y / y-m / y-m-d, sort on y, then jump to entry
-  "   if y found then
-  "     search for y-m
-  "     if not found then add y-m / y-m-d, sort on y-m, then jump to entry
-  "     if y-m found then
-  "       search for d
-  "       if not found then add y-m-d, sort on y-m-d, then jump to entry
-  "       if y-m-d found... not possible (caught above!)
+    " journal found now search for the entry
+    if search("^\t\t\t".l:entry_date."$", "cW") != 0
+        " entry found, unfold it
+        normal ^zx
+        return
+    endif
 
-  if search("^\t".a:year."$", "cW") == 0
-      " year not found
-      exe "normal zvo\<tab>".a:year."\<esc>"
-      exe "normal o\<tab>".a:year."-".l:month."\<esc>"
-      exe "normal o\<tab>".a:year."-".l:month."-".l:day."\<esc>^"
+    " add a new entry algorithm:
+    "   search for y
+    "   if not found then add y / y-m / y-m-d, sort on y, then jump to entry
+    "   if y found then
+    "     search for y-m
+    "     if not found then add y-m / y-m-d, sort on y-m, then jump to entry
+    "     if y-m found then
+    "       search for d
+    "       if not found then add y-m-d, sort on y-m-d, then jump to entry
+    "       if y-m-d found... not possible (caught above!)
 
-      " sort the children on the year
-      normal kkk
-      normal ,,s
+    if search("^\t".a:year."$", "cW") == 0
+        " year not found
+        exe "normal zvo\<tab>".a:year."\<esc>"
+        exe "normal o\<tab>".a:year."-".l:month."\<esc>"
+        exe "normal o\<tab>".l:entry_date."\<esc>^"
 
-      call cursor(l:journal, 0)
-      if search("^\t\t\t".l:entry_date."$", "cW") != 0
-          " entry found, unfold it
-          normal ^zx
-      endif
+        " sort the children on the year
+        normal kkk
+        normal ,,s
 
-      return
-  endif
+        call cursor(l:journal, 0)
+        if search("^\t\t\t".l:entry_date."$", "cW") != 0
+            " entry found, unfold it
+            normal ^zx
+        endif
 
-  " year found, search for year-month
+        return
+    endif
 
-  if search("^\t\t".a:year."-".l:month."$", "cW") == 0
-      " year-month not found
-      exe "normal zvo\<tab>".a:year."-".l:month."\<esc>"
-      exe "normal o\<tab>".a:year."-".l:month."-".l:day."\<esc>^"
+    " year found, search for year-month
 
-      " sort the children on the year-month
-      normal kk
-      normal ,,s
+    if search("^\t\t".a:year."-".l:month."$", "cW") == 0
+        " year-month not found
+        exe "normal zvo\<tab>".a:year."-".l:month."\<esc>"
+        exe "normal o\<tab>".l:entry_date."\<esc>^"
 
-      call cursor(l:journal, 0)
-      if search("^\t\t\t".l:entry_date."$", "cW") != 0
-          " entry found, unfold it
-          normal ^zx
-      endif
+        " sort the children on the year-month
+        normal kk
+        normal ,,s
 
-      return
-  endif
+        call cursor(l:journal, 0)
+        if search("^\t\t\t".l:entry_date."$", "cW") != 0
+            " entry found, unfold it
+            normal ^zx
+        endif
 
-  " year-month found, add new year-month-day entry
-  exe "normal zvo\<tab>".a:year."-".l:month."-".l:day."\<esc>^"
+        return
+    endif
 
-  " sort the children on the year-month-day
-  normal k
-  normal ,,s
+    " year-month found, add new year-month-day entry
+    exe "normal zvo\<tab>".l:entry_date."\<esc>^"
 
-  call cursor(l:journal, 0)
-  if search("^\t\t\t".l:entry_date."$", "cW") != 0
-      " entry found, unfold it
-      normal ^zv
-  endif
+    " sort the children on the year-month-day
+    normal k
+    normal ,,s
+
+    call cursor(l:journal, 0)
+    if search("^\t\t\t".l:entry_date."$", "cW") != 0
+        " entry found, unfold it
+        normal ^zv
+    endif
 endfunction "}}}
 
 function! VotlCalendarSign(day, month, year) "{{{
-  let l:day = s:VotlTwoDigitNum(a:day)
-  let l:month = s:VotlTwoDigitNum(a:month)
-  let l:savecursor = getpos(".") " save cursor
+    let l:day = s:VotlTwoDigitNum(a:day)
+    let l:month = s:VotlTwoDigitNum(a:month)
+    let l:savecursor = getpos(".") " save cursor
 
-  " search for the Journal outline (wrap search and moves cursor)
-  let l:journal = search("^Journal$", "cw")
-  if l:journal == 0
-      call setpos(".", l:savecursor)
-      return 0
-  endif
+    " search for the Journal outline (wrap search and moves cursor)
+    let l:journal = search("^Journal$", "cw")
+    if l:journal == 0
+        call setpos(".", l:savecursor)
+        return 0
+    endif
 
-  " search for the entry from Journal start (nowrap search)
-  let l:sign = search("^\t\t\t".a:year."-".l:month."-".l:day."$", "cW")
+    " search for the entry from Journal start (nowrap search)
+    let l:sign = search("^\t\t\t".a:year."-".l:month."-".l:day."$", "cW")
 
-  call setpos(".", l:savecursor) " reset cursor
-  return l:sign
+    call setpos(".", l:savecursor) " reset cursor
+    return l:sign
+endfunction "}}}
+
+" Jump to today's Journal entry
+function! VotlGotoToday() "{{{
+    let l:day = str2nr(strftime("%d"))
+    let l:month = str2nr(strftime("%m"))
+    let l:year = strftime("%Y")
+    call VotlCalendarAction(l:day, l:month, l:year, 0, 'X')
 endfunction "}}}
 
 " Insert a checkbox at the beginning of a header without disturbing
@@ -811,7 +824,9 @@ nmap <silent><buffer> [[ :call cursor(VotlPrevParent(), 0)<cr>^
 nmap <silent><buffer> ]] :call cursor(VotlNextParent(), 0)<cr>^
 nmap <silent><buffer> {  :call cursor(VotlPrevSibling(), 0)<cr>^
 nmap <silent><buffer> }  :call cursor(VotlNextSibling(), 0)<cr>^
-nmap <silent><buffer> <localleader>cc :Calendar<cr>
+
+nmap <silent><buffer> <localleader>jc :Calendar<cr>
+nmap <silent><buffer> <localleader>jt :call VotlGotoToday()<cr>
 
 " insert/delete a checkbox
 map <silent><buffer> <localleader>cb :call VotlInsertCheckBox()<cr>
