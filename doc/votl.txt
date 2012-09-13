@@ -240,10 +240,10 @@ tree of outlines connected with external links and executable lines.
                                                                  *votl-colors*
 Colors~
 
-Color schemes specify the colors votl uses when displaying an outline. Colors
-are specified by object and level. These objects currently include headings,
-body text, user text, tables, and executables. See |vo-objects| for more
-information.
+Color schemes specify the colors votl uses when displaying an outline.
+Heading colors are specified by object and level. These objects currently
+include headings, body text, user text, and tables. Other color groups
+include executables, checkboxes, percentages, and dates/times.
 
 To override the color scheme add the following to your *.vimrc* file (see
 |highlight| for more information) and modify as needed:
@@ -271,12 +271,17 @@ To override the color scheme add the following to your *.vimrc* file (see
 
 Highlight groups used by votl are:
 
-  *OL[1-9]*  headers
-  *BT[1-9]*  body text
-  *PT[1-9]*  preformatted body text
-  *TA[1-9]*  tables
-  *UT[1-9]*  user-defined text
-  *UB[1-9]*  preformatted user-defined text
+  *OL[1-9]*         headers
+  *BT[1-9]*         body text
+  *PT[1-9]*         preformatted body text
+  *TA[1-9]*         tables
+  *UT[1-9]*         user-defined text
+  *UB[1-9]*         preformatted user-defined text
+  *VotlDate*        'YYYY-MM-DD' date stamps
+  *VotlTime*        'HH-MM-SS' time stamps
+  *VotlCheckbox*    checkboxes
+  *VotlChecked*     'X' in a checkbox
+  *VotlPercentage*  percentage completions
 
 ============================================================================
                                                                *votl-commands*
