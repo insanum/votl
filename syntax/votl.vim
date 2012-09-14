@@ -104,13 +104,14 @@ hi link UB9 Underlined
 syn clear
 syn sync fromstart
 
-syn match VotlTags "_tag_\w*" contained
-syn match VotlDate "\d\d\d\d-\d\d-\d\d" contained
-syn match VotlTime "\d\d:\d\d:\d\d" contained
+syn match VotlTags "\v\s:(\w+:)+(\s|$)" contained
+
+syn match VotlDate "\v\d\d\d\d-\d\d-\d\d" contained
+syn match VotlTime "\v\d\d:\d\d:\d\d" contained
 
 syn match VotlChecked "X" contained
-syn match VotlCheckbox "\[.\]" contained contains=VotlChecked
-syn match VotlPercentage "\(\[.\] \)\@<=[0-9]*%" contained
+syn match VotlCheckbox "\v\[.\]" contained contains=VotlChecked
+syn match VotlPercentage "\v(\[.\] )@<=\d*\%" contained
 
 " body text
 syntax region BT1 start=+^ \S+ skip=+^ \S+ end=+^\S+me=e-1 end=+^\(\t\)\{1}\S+me=e-2 contains=spellErr,SpellErrors,BadWord contained

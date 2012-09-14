@@ -7,15 +7,18 @@ votl is an outline processor designed with lighting fast authoring as the
 main feature. Originally forked from *VimOutliner* and features include tree
 expand/collapse, tree promotion/demotion, level sensitive colors, checkboxes
 and completion percentages for todo lists, quick time/date entry, unformatted
-and formatted body text, tables, and support for calendar entries.
+and formatted body text, tables, and support for calendar entries. The file
+extension used by votl is *.otl* and is compatible with the existing file
+format that *VimOutliner* uses.
 
   License                                                       |votl-license|
   Version                                                       |votl-version|
   Objects                                                       |votl-objects|
   Colors                                                         |votl-colors|
   Commands                                                     |votl-commands|
-  Checkboxes                                                 |votl-checkboxes|
+  Tags                                                             |votl-tags|
   Calendar                                                     |votl-calendar|
+  Checkboxes                                                 |votl-checkboxes|
   HTML                                                             |votl-html|
 
 ============================================================================
@@ -277,6 +280,7 @@ Highlight groups used by votl are:
   *TA[1-9]*         tables
   *UT[1-9]*         user-defined text
   *UB[1-9]*         preformatted user-defined text
+  *VotlTags*        tags formatted as ':tag1:tag2:etc:'
   *VotlDate*        'YYYY-MM-DD' date stamps
   *VotlTime*        'HH-MM-SS' time stamps
   *VotlCheckbox*    checkboxes
@@ -302,6 +306,20 @@ Movement~
   {   normal  Jump to previous section at same or higher level
   {   normal  Jump to next section at same or higher level
 
+Folding~
+
+  <Tab>  normal  Cycle through all tab levels under heading
+  ,,1    normal  set foldlevel=0
+  ,,2    normal  set foldlevel=1
+  ,,3    normal  set foldlevel=2
+  ,,4    normal  set foldlevel=3
+  ,,5    normal  set foldlevel=4
+  ,,6    normal  set foldlevel=5
+  ,,7    normal  set foldlevel=6
+  ,,8    normal  set foldlevel=7
+  ,,9    normal  set foldlevel=8
+  ,,0    normal  set foldlevel=99999
+
 Calendar~
 
   ,,jc  normal  Bring up calendar (requires calendar.vim plugin)
@@ -326,30 +344,18 @@ Checkboxes~
   ,,cx  normal  Toggle checkbox state and update completion percentages
   ,,cz  normal  Update completion percentages for the current tree
 
-Folding~
-
-  <Tab>  normal  Cycle through all tab levels under heading
-  ,,1    normal  set foldlevel=0
-  ,,2    normal  set foldlevel=1
-  ,,3    normal  set foldlevel=2
-  ,,4    normal  set foldlevel=3
-  ,,5    normal  set foldlevel=4
-  ,,6    normal  set foldlevel=5
-  ,,7    normal  set foldlevel=6
-  ,,8    normal  set foldlevel=7
-  ,,9    normal  set foldlevel=8
-  ,,0    normal  set foldlevel=99999
-
 Formatting~
 
   ,,s    normal  Sort children under cursor in ascending order
   ,,S    normal  Sort children under cursor in descending order
   ,,b    normal  Change body text start with a colon and space
   ,,B    normal  Change body text start with a space
+  ,,r    normal  Right align tags at end of line
+  ,,r    visual  Right align tags at end of line for a range of lines
   >>     normal  Demote headline
   <<     normal  Promote headline
-  >      visual  Demote range of headlines
-  <      visual  Promote range of headlines
+  >      visual  Demote a range of headlines
+  <      visual  Promote a range of headlines
   <C-T>  insert  Demote headline
   <C-D>  insert  Promote headline
 
@@ -359,6 +365,93 @@ Other~
   ,,e  normal  Execute the executable tag line under cursor
   ,,w  insert  Save changes and return to insert mode
   ,,W  normal  Export to HTML (foobar.votl -> foobar_votl.html)
+  ,,g  normal  Search for tag under the cursor
+
+============================================================================
+                                                                   *votl-tags*
+Tags~
+
+votl supports inline tags for tracking that can be used in a future query.
+A header can have any number of tags assigned to it and the format for tags
+are:
+
+  :tag1:           for a single tag
+  :tag1:tag2:      for two tags
+  :tag1:tag3:etc:  for any number of tags
+
+A tag is required to have a space both before the first ':' and after the
+last ':' (or be at the end of the line). Note that a tag cannot exist at
+the beginning of the line. If a tag is at the end of the line votl can easily
+right align it to the |textwidth| using the ',,r' command.  This will align
+the tag (if it exists) on the line under the cursor. You can also select
+a visual range as well to align tags for multiple lines.
+
+Example:
+
+  Test                                               :a:b:d:
+    foo                                                :foo:
+      bar :test:fail: geek
+    doh                                           :blah:foo:
+
+A tag can be easily queried (i.e. grep'ed for) using the *:VotlTag* *<tag>*
+command.  This command searches the current buffer for the specific tag,
+creates a location list, and opens up the |location-list| window for the
+buffer.
+
+Example (executing *:VotlTag* *foo* to query the *foo* tag):
+
+  Test                                               :a:b:d:
+    foo                                                :foo:
+      bar :test:fail: geek
+    doh                                           :blah:foo:
+  test.votl ----------------------- [x54/d84] [1,1] [95] All
+  | foo                                                :foo:
+  | doh                                           :blah:foo:
+
+Inside the |location-list| window hitting <Enter> on any line will jump
+to that line in the votl file and open all folds needed to view the line.
+To jump around use the |:lne| and |:lpr| commands. To close the |location-list|
+window use |:lcl| and |:lop| to open it back up.
+
+============================================================================
+                                                               *votl-calendar*
+Calendar~
+
+votl has built in support for daily entries like a journal or diary. This
+requires you have Yasuhiro Matsumoto's awesome Calendar plugin installed
+(http://goo.gl/cGgI).
+
+Open up your votl file and execute ',,jc'. This will bring up the calendar.
+Type '?' to learn how to move around in the Calendar. Move the cursor over
+a date and hit <Enter>. This will jump to a special heading in your votl
+file under the top level header named *Journal* which can be located anywhere
+in the file. If this header does not exist then it will be automatically
+created at the bottom of the file.  For example, assume I highlight 4/8/12
+I would end up with with the following headlines and the cursor on that day.
+Now I can enter my journal/diary/meeting/notes/etc for that day.
+>
+    Journal
+        2011 ---------------------------------------------------------
+        2012
+            2012-04
+                2012-04-01 -------------------------------------------
+                2012-04-08
+                    : Now is the time for all good men to come
+                    : to the aid of their country.
+            2012-09 --------------------------------------------------
+            2012-10 --------------------------------------------------
+<
+
+The *Journal* is automatically sorted in ascending order at each level (i.e.
+by year, then by year-month, and finally by year-month-day). Whenever you
+enter a new entry it will be inserted in the proper location in the *Journal*
+(chronological order).
+
+Additionally, the Calendar plugin will show you which days you have journal
+entries with the date being highlighted in a different color.
+
+If you would like to jump to today's *Journal* entry then execute ',,jt'
+which bypasses the Calendar and quickly jumps to the entry.
 
 ============================================================================
                                                              *votl-checkboxes*
@@ -519,46 +612,6 @@ weighted. You should see:
 
 When you ',,cx' any lines (to complete or uncomplete it) you'll see the
 percentages automatically recalculated in each header.
-
-============================================================================
-                                                               *votl-calendar*
-Calendar~
-
-votl has built in support for daily entries like a journal or diary. This
-requires you have Yasuhiro Matsumoto's awesome Calendar plugin installed
-(http://goo.gl/cGgI).
-
-Open up your votl file and execute ',,jc'. This will bring up the calendar.
-Type '?' to learn how to move around in the Calendar. Move the cursor over
-a date and hit <Enter>. This will jump to a special heading in your votl
-file under the top level header named *Journal* which can be located anywhere
-in the file. If this header does not exist then it will be automatically
-created at the bottom of the file.  For example, assume I highlight 4/8/12
-I would end up with with the following headlines and the cursor on that day.
-Now I can enter my journal/diary/meeting/notes/etc for that day.
->
-    Journal
-        2011 ---------------------------------------------------------
-        2012
-            2012-04
-                2012-04-01 -------------------------------------------
-                2012-04-08
-                    : Now is the time for all good men to come
-                    : to the aid of their country.
-            2012-09 --------------------------------------------------
-            2012-10 --------------------------------------------------
-<
-
-The *Journal* is automatically sorted in ascending order at each level (i.e.
-by year, then by year-month, and finally by year-month-day). Whenever you
-enter a new entry it will be inserted in the proper location in the *Journal*
-(chronological order).
-
-Additionally, the Calendar plugin will show you which days you have journal
-entries with the date being highlighted in a different color.
-
-If you would like to jump to today's *Journal* entry then execute ',,jt'
-which bypasses the Calendar and quickly jumps to the entry.
 
 ============================================================================
                                                                    *votl-html*

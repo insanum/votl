@@ -1,1 +1,1 @@
-autocmd BufNewFile,BufReadPost *.otl setfiletype votl
+autocmd BufNewFile,BufReadPost *.votl setfiletype votl

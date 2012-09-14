@@ -396,37 +396,37 @@ endfunction "}}}
 
 " Is the line body text?
 function! VotlBodyText(line) "{{{
-    return (match(getline(a:line),"^\t*:") == 0)
+    return (match(getline(a:line), "^\t*:") == 0)
 endfunction "}}}
 
 " Is the line preformatted body text?
 function! VotlPreBodyText(line) "{{{
-    return (match(getline(a:line),"^\t*;") == 0)
+    return (match(getline(a:line), "^\t*;") == 0)
 endfunction "}}}
 
 " Is the line user text?
 function! VotlUserText(line) "{{{
-    return (match(getline(a:line),"^\t*>") == 0)
+    return (match(getline(a:line), "^\t*>") == 0)
 endfunction "}}}
 
 " Is the line user text with a space?
 function! VotlUserTextSpace(line) "{{{
-    return (match(getline(a:line),"^\t*> ") == 0)
+    return (match(getline(a:line), "^\t*> ") == 0)
 endfunction "}}}
 
 " Is the line preformatted user text?
 function! VotlPreUserText(line) "{{{
-    return (match(getline(a:line),"^\t*<") == 0)
+    return (match(getline(a:line), "^\t*<") == 0)
 endfunction "}}}
 
 " Is the line preformatted user text with a space?
 function! VotlPreUserTextSpace(line) "{{{
-    return (match(getline(a:line),"^\t*< ") == 0)
+    return (match(getline(a:line), "^\t*< ") == 0)
 endfunction "}}}
 
 " Is the line preformatted table?
 function! VotlPreTable(line) "{{{
-    return (match(getline(a:line),"^\t*|") == 0)
+    return (match(getline(a:line), "^\t*|") == 0)
 endfunction "}}}
 
 " Determine the fold level of a line.
@@ -550,10 +550,10 @@ function! VotlCalendarAction(day, month, year, week, dir) "{{{
     let l:journal = search("^Journal$", "cw")
     if l:journal == 0
         " journal not found so make one at the end of the the file
-        exe "normal! GoJournal\<cr>\<esc>"
-        exe "normal! i\<tab>".a:year."\<cr>\<esc>"
-        exe "normal! i\<tab>\<tab>".a:year."-".l:month."\<cr>\<esc>"
-        exe "normal! i\<tab>\<tab>\<tab>".l:entry_date."\<esc>"
+        execute "normal! GoJournal\<cr>\<esc>"
+        execute "normal! i\<tab>".a:year."\<cr>\<esc>"
+        execute "normal! i\<tab>\<tab>".a:year."-".l:month."\<cr>\<esc>"
+        execute "normal! i\<tab>\<tab>\<tab>".l:entry_date."\<esc>"
         normal! ^zx
         return
     endif
@@ -578,9 +578,9 @@ function! VotlCalendarAction(day, month, year, week, dir) "{{{
 
     if search("^\t".a:year."$", "cW") == 0
         " year not found
-        exe "normal! zvo\<tab>".a:year."\<esc>"
-        exe "normal! o\<tab>".a:year."-".l:month."\<esc>"
-        exe "normal! o\<tab>".l:entry_date."\<esc>^"
+        execute "normal! zvo\<tab>".a:year."\<esc>"
+        execute "normal! o\<tab>".a:year."-".l:month."\<esc>"
+        execute "normal! o\<tab>".l:entry_date."\<esc>^"
 
         " sort the children on the year
         normal! kkk
@@ -599,8 +599,8 @@ function! VotlCalendarAction(day, month, year, week, dir) "{{{
 
     if search("^\t\t".a:year."-".l:month."$", "cW") == 0
         " year-month not found
-        exe "normal! zvo\<tab>".a:year."-".l:month."\<esc>"
-        exe "normal! o\<tab>".l:entry_date."\<esc>^"
+        execute "normal! zvo\<tab>".a:year."-".l:month."\<esc>"
+        execute "normal! o\<tab>".l:entry_date."\<esc>^"
 
         " sort the children on the year-month
         normal! kk
@@ -616,7 +616,7 @@ function! VotlCalendarAction(day, month, year, week, dir) "{{{
     endif
 
     " year-month found, add new year-month-day entry
-    exe "normal! zvo\<tab>".l:entry_date."\<esc>^"
+    execute "normal! zvo\<tab>".l:entry_date."\<esc>^"
 
     " sort the children on the year-month-day
     normal! k
@@ -659,10 +659,10 @@ endfunction "}}}
 " Insert a checkbox at the beginning of a header without disturbing
 " the current folding only if there is no checkbox already.
 function! VotlInsertCheckBox() "{{{
-    if match(getline("."),"^\t\t*\[<>:;|\]") != -1
+    if match(getline("."), "^\t\t*\[<>:;|\]") != -1
         return
     endif
-    if match(getline("."),"[\[X_\]]") == -1
+    if match(getline("."), "[\[X_\]]") == -1
         let @x = "[_] "
         normal! ^"xP
     endif
@@ -684,7 +684,7 @@ endfunction "}}}
 " Insert a checkbox and % sign at the beginning of a header without
 " disturbing the current folding only if there is no checkbox already.
 function! VotlInsertCheckBoxPercent() "{{{
-    if match(getline("."),"^\t\t*\[<>:;|\]") != -1
+    if match(getline("."), "^\t\t*\[<>:;|\]") != -1
         return
     endif
     if match(getline("."), "[\[X_\]]") == -1
@@ -701,7 +701,7 @@ endfunction "}}}
 " disturbing the current folding only if there is no checkbox already.
 " Include the checkbox even on childless headings.
 function! VotlInsertCheckBoxPercentAlways() "{{{
-    if match(getline("."),"^\t\t*\[<>:;|\]") != -1
+    if match(getline("."), "^\t\t*\[<>:;|\]") != -1
         return
     endif
     if match(getline("."), "[\[X_\]]") == -1
@@ -754,7 +754,7 @@ function! VotlComputeHowMuchDone(line) "{{{
     if l:count>0
         let l:proportion = ((l:done * 100)/l:count)/100
     else
-        if match(getline(a:line),"\\[X\\]") != -1
+        if match(getline(a:line), "\\[X\\]") != -1
             let l:proportion = 100
         else 
             let l:proportion = 0
@@ -765,9 +765,9 @@ function! VotlComputeHowMuchDone(line) "{{{
         call setline(a:line,substitute(getline(a:line),"\\[.\\]","[X]",""))
         return 100
     elseif l:proportion == 0 && l:count == 0
-        if match(getline(a:line),"\\[X\\]") != -1
+        if match(getline(a:line), "\\[X\\]") != -1
             return 100
-        elseif match(getline(a:line),"\\[_\\]") != -1
+        elseif match(getline(a:line), "\\[_\\]") != -1
             return 0
         else
             return -1
@@ -788,11 +788,82 @@ function! VotlToHtml() "{{{
     "normal! 1ggzM
     normal! 1ggzR
 
-    exe "TOhtml"
-    exe "w! ".l:dest_file
-    exe "q!"
+    execute "TOhtml"
+    execute "w! ".l:dest_file
+    execute "q!"
     call setpos(".", l:savecursor) " reset cursor
     normal! zx
+endfunction "}}}
+
+" aligns a tag located at the end of the line to the textwidth
+function! VotlRightAlignTags() "{{{
+    let l:line = line(".")
+    let l:indent = s:VotlIndent(l:line)
+
+    normal! ^
+
+    " search for ending tags and bail if none
+    let l:tag_start = searchpos('\v\s:(\w+:)+\s*$', "", l:line)
+    if l:tag_start[1] == 0 " no tags on this line
+        return
+    endif
+
+    " replace all whitespace between heading and tags with a single space
+    execute "normal! gelcw "
+
+    " save the current cursor position between header and tags
+    let l:insert_loc = getpos(".")
+
+    " delete all trailing whitespace (should use getline/substitute/setline)
+    s/\v\s+$//e
+
+    " get the gap length between the end of the tags to the textwidth
+    normal! $
+    let l:end_loc = getpos(".")
+    let l:num_to_insert = &textwidth-l:end_loc[2]-l:indent
+
+    " if there is a gap then right align the tags
+    if l:num_to_insert > 0
+        call setpos(".", l:insert_loc)
+        execute "normal! ".l:num_to_insert."i \<esc>"
+        "call feedkeys("i".repeat(' ', l:num_to_insert)."\<esc>", "m")
+    endif
+
+    normal! ^
+endfunction "}}}
+
+" finds all lines with a given tag and lists them in the quickfix window
+function! VotlFindTag(tag) "{{{
+    normal! gg
+    let l:bufnr = bufnr('%')
+
+    call setloclist(l:bufnr, []) " clear the quickfix window
+
+    for l:i in range(1, line("$"))
+        let l:line = getline(l:i)
+        if match(l:line,
+                \"\\v\\s:(\\w+:)*".a:tag."(:\\w+)*:(\\s|$)") == -1
+            continue
+        endif
+        " can't figure out how to prevent quickfix from squashing
+        " whitespace at the beginning of the line. That is why the
+        " '|' is prefixes to the line text.
+        let l:tmp = { 'bufnr':l:bufnr, 'lnum':l:i, 'text':"|".l:line }
+        call setloclist(l:bufnr, [l:tmp], "a")
+    endfor
+
+    if len(getloclist(l:bufnr)) == 0
+        echo "No matches for tag: ".a:tag
+        return
+    endif
+
+    lopen
+    setlocal tabstop=2
+    setlocal modifiable
+    execute "g/^/normal! dW"
+    setlocal nomodifiable
+    setlocal nomodified
+    normal! gg
 endfunction "}}}
 
 " Vim Outliner Key Mappings {{{
@@ -803,8 +874,8 @@ imap <silent><buffer> <localleader>d ~<esc>x:call VotlInsertDate(0)<cr>a
 nmap <silent><buffer> <localleader>D ^:call VotlInsertDate(1)<cr>a <esc>
 
 " insert the data after the first word (i.e. checkbox)
-iab  <buffer>         xdate <C-R>=strftime("%Y-%m-%d")<CR>
-nmap <silent><buffer> <localleader>x ^Wixdate <ESC>
+iab  <buffer>         xdate <C-R>=strftime("%Y-%m-%d")<cr>
+nmap <silent><buffer> <localleader>x ^Wixdate <esc>
 
 " insert the time
 nmap <silent><buffer> <localleader>t $:call VotlInsertTimeWithSpace()<cr>
@@ -824,18 +895,18 @@ imap <silent><buffer> <localleader>- <esc>o-------------------------------------
 nmap <silent><buffer><localleader>b :%s/\(^\t*\):/\1/e<cr>:%s/\(^\t*\) /\1: /e<cr>:let @/=""<cr>
 nmap <silent><buffer><localleader>B :%s/\(^\t*\):/\1/e<cr>:let @/=""<cr>
 
-nmap <silent><buffer> <localleader>1 :set foldlevel=0<CR>
-nmap <silent><buffer> <localleader>2 :set foldlevel=1<CR>
-nmap <silent><buffer> <localleader>3 :set foldlevel=2<CR>
-nmap <silent><buffer> <localleader>4 :set foldlevel=3<CR>
-nmap <silent><buffer> <localleader>5 :set foldlevel=4<CR>
-nmap <silent><buffer> <localleader>6 :set foldlevel=5<CR>
-nmap <silent><buffer> <localleader>7 :set foldlevel=6<CR>
-nmap <silent><buffer> <localleader>8 :set foldlevel=7<CR>
-nmap <silent><buffer> <localleader>9 :set foldlevel=8<CR>
-nmap <silent><buffer> <localleader>0 :set foldlevel=99999<CR>
+nmap <silent><buffer> <localleader>1 :set foldlevel=0<cr>
+nmap <silent><buffer> <localleader>2 :set foldlevel=1<cr>
+nmap <silent><buffer> <localleader>3 :set foldlevel=2<cr>
+nmap <silent><buffer> <localleader>4 :set foldlevel=3<cr>
+nmap <silent><buffer> <localleader>5 :set foldlevel=4<cr>
+nmap <silent><buffer> <localleader>6 :set foldlevel=5<cr>
+nmap <silent><buffer> <localleader>7 :set foldlevel=6<cr>
+nmap <silent><buffer> <localleader>8 :set foldlevel=7<cr>
+nmap <silent><buffer> <localleader>9 :set foldlevel=8<cr>
+nmap <silent><buffer> <localleader>0 :set foldlevel=99999<cr>
 
-imap <silent><buffer> <localleader>w <Esc>:w<CR>a
+imap <silent><buffer> <localleader>w <esc>:w<cr>a
 nmap <silent><buffer> <localleader>e :call VotlSpawn()<cr>
 
 nmap <silent><buffer> [[ :call cursor(VotlPrevParent(), 0)<cr>^
@@ -863,6 +934,14 @@ nmap <silent><buffer> <tab> :call VotlToggleFolding()<cr>
 
 " dump vtol to html
 nmap <silent><buffer> <localleader>W :call VotlToHtml()<cr>
+
+" right align tags
+nmap <silent><buffer> <localleader>r :call VotlRightAlignTags()<cr>
+vmap <silent><buffer> <localleader>r :call VotlRightAlignTags()<cr>
+
+" find tag and list results in the quickfix window
+command! -nargs=1 -complete=command VotlTag call VotlFindTag(<f-args>)
+nmap <silent><buffer> <localleader>g :call VotlFindTag(expand("<cword>"))<cr>
 
 " End of Vim Outliner Key Mappings }}}
 
