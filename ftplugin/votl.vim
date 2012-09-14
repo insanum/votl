@@ -832,8 +832,38 @@ function! VotlRightAlignTags() "{{{
     normal! ^
 endfunction "}}}
 
+" list all tags for tab completion with VotlTag
+function! VotlListTags(ArgLead, CmdLine, CursorPos) "{{{
+    let l:savecursor = getpos(".") " save cursor
+
+    normal! gg
+    let l:list = []
+
+    for l:i in range(1, line("$"))
+        let l:line = getline(l:i)
+        let l:tags = matchstr(l:line, "\\v\\s:(\\w+:)+(\\s|$)", 0)
+        if l:tags == -1
+            continue
+        endif
+        for l:t in split(l:tags, ":")
+            if l:t == ' ' || match(l:list, l:t) != -1
+                continue
+            endif
+            if match(l:t, "^".a:ArgLead) == -1
+                continue
+            endif
+            call extend(l:list, [l:t])
+        endfor
+    endfor
+
+    call setpos(".", l:savecursor) " reset cursor
+    return l:list
+endfunction "}}}
+
 " finds all lines with a given tag and lists them in the quickfix window
 function! VotlFindTag(tag) "{{{
+    let l:savecursor = getpos(".") " save cursor
+
     normal! gg
     let l:bufnr = bufnr('%')
 
@@ -853,6 +883,7 @@ function! VotlFindTag(tag) "{{{
     endfor
 
     if len(getloclist(l:bufnr)) == 0
+        call setpos(".", l:savecursor) " reset cursor
         echo "No matches for tag: ".a:tag
         return
     endif
@@ -940,7 +971,7 @@ nmap <silent><buffer> <localleader>r :call VotlRightAlignTags()<cr>
 vmap <silent><buffer> <localleader>r :call VotlRightAlignTags()<cr>
 
 " find tag and list results in the quickfix window
-command! -nargs=1 -complete=command VotlTag call VotlFindTag(<f-args>)
+command! -nargs=1 -complete=customlist,VotlListTags VotlTag call VotlFindTag(<f-args>)
 nmap <silent><buffer> <localleader>g :call VotlFindTag(expand("<cword>"))<cr>
 
 " End of Vim Outliner Key Mappings }}}

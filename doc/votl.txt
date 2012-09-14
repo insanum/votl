@@ -398,6 +398,8 @@ command.  This command searches the current buffer for the specific tag,
 creates a location list, and opens up the |location-list| window for the
 buffer.
 
+The *:VotlTag* command supports <Tab> completion for the tag name.
+
 Example (executing *:VotlTag* *foo* to query the *foo* tag):
 
   Test                                               :a:b:d:
