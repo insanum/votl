@@ -798,6 +798,10 @@ endfunction "}}}
 " aligns a tag located at the end of the line to the textwidth
 function! VotlRightAlignTags() "{{{
     let l:line = line(".")
+    if foldclosed(l:line) != -1
+        normal! zv
+    endif
+
     let l:indent = s:VotlIndent(l:line)
 
     normal! ^
@@ -969,6 +973,7 @@ nmap <silent><buffer> <localleader>W :call VotlToHtml()<cr>
 " right align tags
 nmap <silent><buffer> <localleader>r :call VotlRightAlignTags()<cr>
 vmap <silent><buffer> <localleader>r :call VotlRightAlignTags()<cr>
+command! -range -nargs=0 -complete=command VotlAlignTags <line1>,<line2>call VotlRightAlignTags()
 
 " find tag and list results in the quickfix window
 command! -nargs=1 -complete=customlist,VotlListTags VotlTag call VotlFindTag(<f-args>)

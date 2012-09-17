@@ -8,8 +8,8 @@ main feature. Originally forked from *VimOutliner* and features include tree
 expand/collapse, tree promotion/demotion, level sensitive colors, checkboxes
 and completion percentages for todo lists, quick time/date entry, unformatted
 and formatted body text, tables, and support for calendar entries. The file
-extension used by votl is *.otl* and is compatible with the existing file
-format that *VimOutliner* uses.
+extension used by votl is *.votl* and remains compatible with the existing
+file format that *VimOutliner* uses.
 
   License                                                       |votl-license|
   Version                                                       |votl-version|
