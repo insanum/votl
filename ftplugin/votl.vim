@@ -796,7 +796,7 @@ function! VotlToHtml() "{{{
 endfunction "}}}
 
 " aligns a tag located at the end of the line to the textwidth
-function! VotlRightAlignTags() "{{{
+function! VotlAlignTags() "{{{
     let l:line = line(".")
     if foldclosed(l:line) != -1
         normal! zv
@@ -818,7 +818,7 @@ function! VotlRightAlignTags() "{{{
     " save the current cursor position between header and tags
     let l:insert_loc = getpos(".")
 
-    " delete all trailing whitespace (should use getline/substitute/setline)
+    " delete any trailing whitespace (should use getline/substitute/setline)
     s/\v\s+$//e
 
     " get the gap length between the end of the tags to the textwidth
@@ -832,6 +832,28 @@ function! VotlRightAlignTags() "{{{
         execute "normal! ".l:num_to_insert."i \<esc>"
         "call feedkeys("i".repeat(' ', l:num_to_insert)."\<esc>", "m")
     endif
+
+    normal! ^
+endfunction "}}}
+
+" delete all tags on the line
+function! VotlDeleteTags() "{{{
+    let l:line = line(".")
+    if foldclosed(l:line) != -1
+        normal! zv
+    endif
+
+    " search for tags and bail if none
+    let l:tag_start = searchpos('\v\s@<=:(\w+:)+(\s|$)', "", l:line)
+    if l:tag_start[1] == 0 " no tags on this line
+        return
+    endif
+
+    " trim all whitespace and delete the tags 
+    execute "normal! gelcw \<esc>ldW"
+
+    " delete any trailing whitespace (should use getline/substitute/setline)
+    s/\v\s+$//e
 
     normal! ^
 endfunction "}}}
@@ -971,13 +993,18 @@ nmap <silent><buffer> <tab> :call VotlToggleFolding()<cr>
 nmap <silent><buffer> <localleader>W :call VotlToHtml()<cr>
 
 " right align tags
-nmap <silent><buffer> <localleader>r :call VotlRightAlignTags()<cr>
-vmap <silent><buffer> <localleader>r :call VotlRightAlignTags()<cr>
-command! -range -nargs=0 -complete=command VotlAlignTags <line1>,<line2>call VotlRightAlignTags()
+nmap <silent><buffer> <localleader>gr :call VotlAlignTags()<cr>
+vmap <silent><buffer> <localleader>gr :call VotlAlignTags()<cr>
+command! -range -nargs=0 -complete=command VotlAlignTags <line1>,<line2>call VotlAlignTags()
+
+" delete tags
+nmap <silent><buffer> <localleader>gd :call VotlDeleteTags()<cr>
+vmap <silent><buffer> <localleader>gd :call VotlDeleteTags()<cr>
+command! -range -nargs=0 -complete=command VotlDeleteTags <line1>,<line2>call VotlDeleteTags()
 
 " find tag and list results in the quickfix window
 command! -nargs=1 -complete=customlist,VotlListTags VotlTag call VotlFindTag(<f-args>)
-nmap <silent><buffer> <localleader>g :call VotlFindTag(expand("<cword>"))<cr>
+nmap <silent><buffer> <localleader>gf :call VotlFindTag(expand("<cword>"))<cr>
 
 " End of Vim Outliner Key Mappings }}}
 

@@ -36,7 +36,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 votl is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU General Public License for more details.
 
 See <http://www.gnu.org/licenses/>.
@@ -344,14 +344,20 @@ Checkboxes~
   ,,cx  normal  Toggle checkbox state and update completion percentages
   ,,cz  normal  Update completion percentages for the current tree
 
+Tags
+
+  ,,gr  normal  Right align tags at end of line
+  ,,gr  visual  Right align tags at end of line for a range of lines
+  ,,gd  normal  Delete all tags on the line
+  ,,gd  visual  Delete all tags on the line for a range of lines
+  ,,gf  normal  Find all occurrences of the tag under the cursor
+
 Formatting~
 
   ,,s    normal  Sort children under cursor in ascending order
   ,,S    normal  Sort children under cursor in descending order
   ,,b    normal  Change body text start with a colon and space
   ,,B    normal  Change body text start with a space
-  ,,r    normal  Right align tags at end of line
-  ,,r    visual  Right align tags at end of line for a range of lines
   >>     normal  Demote headline
   <<     normal  Promote headline
   >      visual  Demote a range of headlines
@@ -382,9 +388,9 @@ are:
 A tag is required to have a space both before the first ':' and after the
 last ':' (or be at the end of the line). Note that a tag cannot exist at
 the beginning of the line. If a tag is at the end of the line votl can easily
-right align it to the |textwidth| using the ',,r' command.  This will align
-the tag (if it exists) on the line under the cursor. You can also select
-a visual range as well to align tags for multiple lines.
+right align it to the |textwidth| using the ',,gr' command. This will align
+the tag (if it exists) on the line under the cursor. You can also specify a
+range or select a visual range to align tags for multiple lines.
 
 Example:
 
@@ -393,8 +399,12 @@ Example:
       bar :test:fail: geek
     doh                                           :blah:foo:
 
+Tags can be deleted using the ',,gd' command. Any tags found on the line will
+be deleted. Additionally, you can specify a range or select a visual range to
+delete tags for multiple lines.
+
 A tag can be easily queried (i.e. grep'ed for) using the *:VotlTag* *<tag>*
-command.  This command searches the current buffer for the specific tag,
+command. This command searches the current buffer for the specific tag,
 creates a location list, and opens up the |location-list| window for the
 buffer.
 
@@ -428,7 +438,7 @@ Type '?' to learn how to move around in the Calendar. Move the cursor over
 a date and hit <Enter>. This will jump to a special heading in your votl
 file under the top level header named *Journal* which can be located anywhere
 in the file. If this header does not exist then it will be automatically
-created at the bottom of the file.  For example, assume I highlight 4/8/12
+created at the bottom of the file. For example, assume I highlight 4/8/12
 I would end up with with the following headlines and the cursor on that day.
 Now I can enter my journal/diary/meeting/notes/etc for that day.
 >
@@ -538,8 +548,8 @@ is fully expanded.
 
 4. Now summarize what's done.
 
-You can summarize what is done with the ',,cz' command.  Place the cursor on
-the 'Barbeque' heading and ',,cz' it.  The command will recursively process
+You can summarize what is done with the ',,cz' command. Place the cursor on
+the 'Barbeque' heading and ',,cz' it. The command will recursively process
 the outline and update the check boxes of the parent headlines. You should
 see (the only change is on the 'Guests' heading because all of its children
 are complete):
@@ -565,7 +575,7 @@ are complete):
 5. Add percentages for a better view.
 
 You can get a much better view of what's going on, especially with collapsed
-headings, if you add percentages.  Place a '%' on each heading that has
+headings, if you add percentages. Place a '%' on each heading that has
 children like this:
 >
     [_] % Barbeque
