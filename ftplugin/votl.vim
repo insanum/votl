@@ -362,36 +362,38 @@ function VotlFoldText() "{{{
     return l:sub
 endfunction "}}}
 
-" Insert today's date.
-function VotlInsertDate(ba) "{{{
-    let @x = strftime("%Y-%m-%d")
-    if a:ba == "0"
-        normal! "xp
-    else
-        normal! "xP
+" Insert the date/time.
+function VotlInsertDateTime(location, stamp) "{{{
+    if a:stamp == 0
+        let @x = strftime("%Y-%m-%d")
+    elseif a:stamp == 1
+        let @x = strftime("%T")
+    else " a:stamp == 2
+        let @x = strftime("%Y-%m-%d %T")
     endif
-endfunction "}}}
 
-" Insert a space, then today's date.
-function VotlInsertDateWithSpace() "{{{
-    let @x = " " . strftime("%Y-%m-%d")
-    normal! "xp
-endfunction "}}}
-
-" Insert the current time.
-function VotlInsertTime(ba) "{{{
-    let @x = strftime("%T")
-    if a:ba == "0"
-        normal! "xp
-    else
-        normal! "xP
+    if a:location == 0
+        let l:line = getline(line("."))
+        if match(l:line, "\\v(^\\s*\\[.\\] )@<=\\d*\\%\\s") != -1
+            " insert date after a checkbox/percentage
+            execute "normal! ^2W\"xPa \<esc>^"
+        elseif match(l:line, "\\v^\\s*\\[.\\]\\s") != -1
+            " insert date after a checkbox
+            execute "normal! ^W\"xPa \<esc>^"
+        else
+            " insert date at the beginning of the line
+            execute "normal! ^\"xPa \<esc>^"
+        endif
+    else " a:location == 1
+        let l:line = getline(line("."))
+        if match(l:line, "\\v\\s:(\\w+:)+\\s*$") != -1
+            " insert date before the trailing tags
+            execute "normal! $Bgelcw \<esc>\"xpa \<esc>^"
+        else
+            " insert date at the end of the line
+            execute "normal! $a \<esc>\"xp^"
+        endif
     endif
-endfunction "}}}
-
-" Insert a space, then the current time.
-function VotlInsertTimeWithSpace() "{{{
-    let @x = " " . strftime("%T")
-    normal! "xp
 endfunction "}}}
 
 " Is the line body text?
@@ -486,13 +488,13 @@ endfunction "}}}
 
 " Execute an executable line
 function VotlSpawn() "{{{
-    let theline=getline(line("."))
-    let idx=matchend(theline, "_exe_\\s*")
+    let theline = getline(line("."))
+    let idx = matchend(theline, "_exe_\\s*")
     if idx == -1
         echo "Not an executable line"
     else
-        let command=strpart(theline, idx)
-        let command="!".command
+        let command = strpart(theline, idx)
+        let command = "!".command
         exec command
     endif
 endfunction "}}}
@@ -637,7 +639,7 @@ function! VotlCalendarSign(day, month, year) "{{{
     " search for the Journal outline (wrap search and moves cursor)
     let l:journal = search("^Journal$", "cw")
     if l:journal == 0
-        call setpos(".", l:savecursor)
+        call setpos(".", l:savecursor) " reset cursor
         return 0
     endif
 
@@ -925,23 +927,21 @@ endfunction "}}}
 
 " Vim Outliner Key Mappings {{{
 
-" insert the date
-nmap <silent><buffer> <localleader>d $:call VotlInsertDateWithSpace()<cr>
-imap <silent><buffer> <localleader>d ~<esc>x:call VotlInsertDate(0)<cr>a
-nmap <silent><buffer> <localleader>D ^:call VotlInsertDate(1)<cr>a <esc>
+" insert the date 'YYYY-MM-DD'
+nmap <silent><buffer> <localleader>d :call VotlInsertDateTime(0, 0)<cr>
+nmap <silent><buffer> <localleader>D :call VotlInsertDateTime(1, 0)<cr>
 
-" insert the data after the first word (i.e. checkbox)
-iab  <buffer>         xdate <C-R>=strftime("%Y-%m-%d")<cr>
-nmap <silent><buffer> <localleader>x ^Wixdate <esc>
+" insert the time 'HH:MM:SS'
+nmap <silent><buffer> <localleader>t :call VotlInsertDateTime(0, 1)<cr>
+nmap <silent><buffer> <localleader>T :call VotlInsertDateTime(1, 1)<cr>
 
-" insert the time
-nmap <silent><buffer> <localleader>t $:call VotlInsertTimeWithSpace()<cr>
-imap <silent><buffer> <localleader>t ~<esc>x:call VotlInsertTime(0)<cr>a
-nmap <silent><buffer> <localleader>T ^:call VotlInsertTime(1)<cr>a <esc>
+" insert the date and time 'YYYY-MM-DD HH:MM:SS'
+nmap <silent><buffer> <localleader>x :call VotlInsertDateTime(0, 2)<cr>
+nmap <silent><buffer> <localleader>X :call VotlInsertDateTime(1, 2)<cr>
 
 " sort a list (forward / reverse)
-nmap <silent><buffer> <localleader>s :silent call VotlSortChildren(0)<cr>
-nmap <silent><buffer> <localleader>S :silent call VotlSortChildren(1)<cr>
+nmap <silent><buffer> <localleader>s :call VotlSortChildren(0)<cr>
+nmap <silent><buffer> <localleader>S :call VotlSortChildren(1)<cr>
 
 " Insert a fence for segmented lists.
 " I also use this divider to create a <hr> when converting to html

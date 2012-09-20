@@ -281,8 +281,8 @@ Highlight groups used by votl are:
   *UT[1-9]*         user-defined text
   *UB[1-9]*         preformatted user-defined text
   *VotlTags*        tags formatted as ':tag1:tag2:etc:'
-  *VotlDate*        'YYYY-MM-DD' date stamps
-  *VotlTime*        'HH-MM-SS' time stamps
+  *VotlDate*        'YYYY-MM-DD' date stamp
+  *VotlTime*        'HH-MM-SS' time stamp
   *VotlCheckbox*    checkboxes
   *VotlChecked*     'X' in a checkbox
   *VotlPercentage*  percentage completions
@@ -327,13 +327,16 @@ Calendar~
 
 Time and Date~
 
-  ,,t  normal  Append timestamp (HH:MM:SS) to heading
-  ,,t  insert  Insert timestamp (HH:MM:SS) at cursor
-  ,,T  normal  Prepend timestamp (HH:MM:SS) to heading
-  ,,d  normal  Append datestamp (YYYY-MM-DD) to heading
-  ,,d  insert  Insert datestamp (YYYY-MM-DD) at cursor
-  ,,D  normal  Prepend datestamp (YYYY-MM-DD) to heading
-  ,,x  normal  Prepend datestamp (YYYY-MM-DD) to heading after checkbox
+  date stamp       YYYY-MM-DD
+  time stamp       HH:MM:SS
+  date/time stamp  YYYY-MM-DD HH:MM:SS
+
+  ,,d  normal  Prepend date to heading (after any checkbox/percentage)
+  ,,D  normal  Append date to heading (before any trailing tags)
+  ,,t  normal  Prepend time to heading (after any checkbox/percentage)
+  ,,T  normal  Append time to heading (before any trailing tags)
+  ,,x  normal  Prepend date/time to heading (after any checkbox/percentage)
+  ,,X  normal  Append date/time to heading (before any trailing tags)
 
 Checkboxes~
 
@@ -344,7 +347,7 @@ Checkboxes~
   ,,cx  normal  Toggle checkbox state and update completion percentages
   ,,cz  normal  Update completion percentages for the current tree
 
-Tags
+Tags~
 
   ,,gr  normal  Right align tags at end of line
   ,,gr  visual  Right align tags at end of line for a range of lines
