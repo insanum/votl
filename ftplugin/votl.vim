@@ -896,7 +896,7 @@ function! VotlFindTag(tag) "{{{
     for l:i in range(1, line("$"))
         let l:line = getline(l:i)
         if match(l:line,
-                \'\v\s:(\w+:)*".a:tag."(:\w+)*:(\s|$)') == -1
+                \'\v\s:(\w+:)*'.a:tag.'(:\w+)*:(\s|$)') == -1
             continue
         endif
         " can't figure out how to prevent quickfix from squashing
