@@ -345,7 +345,7 @@ function VotlFoldText() "{{{
         let l:bodyTextFlag=1
         let l:MySpaces = VotlMakeSpaces(&sw * (v:foldlevel-1))
         let l:line = l:MySpaces."[USER BLOCK ".l:l."]"
-    elseif l:line =~ "^\t*\|"
+    elseif l:line =~ "^\t*[|+]"
         let l:bodyTextFlag=1
         let l:MySpaces = VotlMakeSpaces(&sw * (v:foldlevel-1))
         let l:line = l:MySpaces."[TABLE]"
@@ -428,7 +428,7 @@ endfunction "}}}
 
 " Is the line preformatted table?
 function! VotlPreTable(line) "{{{
-    return (match(getline(a:line), "^\t*|") == 0)
+    return (match(getline(a:line), "^\t*[|+]") == 0)
 endfunction "}}}
 
 " Determine the fold level of a line.

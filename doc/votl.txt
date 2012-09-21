@@ -108,10 +108,13 @@ When folded, preformatted body text looks something like this:
 
 Tables~
 
-The table marker '|' is used to create tables. This is an excellent way to
-show tabular data. The marker is used as if it were are real vertical line.
-A '||' (double-|) is optionally used to mark a table heading line which is
-useful for post-processors.
+There are two types of table formats supported by votl. The original
+*VimOutliner* format and the *RestructuredText* format.
+
+The original *VimOutliner* format uses a table marker '|' to create tables.
+The marker is used as if it were are real vertical line. A double '||'
+is optionally used to mark a table heading line which is useful for
+post-processors.
 
 Here is an example:
 >
@@ -122,7 +125,37 @@ Here is an example:
         | Sophia |   9 |    cat |         inside |
 <
 
-There is no automatic alignment of columns and must be done manually.
+With the above format there is NO automatic alignment of columns.
+
+The other, and much better, format supported by votl is the
+*RestructuredText* format. The table above would be formatted as:
+>
+    Pets
+        +--------+-----+--------+----------------+
+        | Name   | Age | Animal | Inside/Outside |
+        +========+=====+========+================+
+        | Kirby  | 9   | dog    | both           |
+        +--------+-----+--------+----------------+
+        | Hoover | 1   | dog    | both           |
+        +--------+-----+--------+----------------+
+        | Sophia | 9   | cat    | inside         |
+        +--------+-----+--------+----------------+
+<
+
+Your first thought might be that this format would be very difficult
+to maintain by hand and you're right. Fortunately there is a really
+great Vim plugin to automate the table creation and flow. This plugin
+is named *vim-rst-tables* and can be download from git. There is also
+a nice video showing its functionality.
+>
+    vim-rst-tables:  https://github.com/nvie/vim-rst-tables
+    video demo:      http://vimeo.com/14300874
+<
+
+Regardless of the table format used the syntax coloring of the tables
+is the same for both. The color of the table "lines" is controlled
+with the VotlTableLines highlight group. The actual color of the text
+in the table cells is inherited from the current heading level.
 
 When folded, a table looks something like this:
 >
@@ -277,7 +310,6 @@ Highlight groups used by votl are:
   *OL[1-9]*         headers
   *BT[1-9]*         body text
   *PT[1-9]*         preformatted body text
-  *TA[1-9]*         tables
   *UT[1-9]*         user-defined text
   *UB[1-9]*         preformatted user-defined text
   *VotlTags*        tags formatted as ':tag1:tag2:etc:'
@@ -286,6 +318,7 @@ Highlight groups used by votl are:
   *VotlCheckbox*    checkboxes
   *VotlChecked*     'X' in a checkbox
   *VotlPercentage*  percentage completions
+  *VotlTableLines*  lines for tables (table text inherits header color)
 
 ============================================================================
                                                                *votl-commands*
