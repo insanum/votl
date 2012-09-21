@@ -4,28 +4,43 @@ votl
 Vim Outliner Plugin
 
 ```
-*votl.txt*	For Vim version 7.35	Last change: 2012 Sep 11
+*votl.txt*	For Vim version 7.35	Last change: 2012 Sep 22
 
                                                                         *votl*
 votl - Vim Outliner~
 
-votl is an outline processor designed with lighting fast authoring as the
-main feature. Originally forked from *VimOutliner* and features include tree
-expand/collapse, tree promotion/demotion, level sensitive colors, checkboxes
-and completion percentages for todo lists, quick time/date entry, unformatted
-and formatted body text, tables, and support for calendar entries. The file
-extension used by votl is *.votl* and remains compatible with the existing
-file format that *VimOutliner* uses.
+votl is an outline processor designed for super fast authoring. It was
+originally forked from *VimOutliner* and features include tree expand and
+collapse, tree promotion and demotion, sorting children, level sensitive
+colors, checkboxes and completion percentages for todo lists, tags, quick
+time and date entry, unformatted and formatted body text, tables, and
+support for calendar entries.
 
-  License                                                       |votl-license|
-  Version                                                       |votl-version|
-  Objects                                                       |votl-objects|
-  Colors                                                         |votl-colors|
-  Commands                                                     |votl-commands|
-  Tags                                                             |votl-tags|
-  Calendar                                                     |votl-calendar|
-  Checkboxes                                                 |votl-checkboxes|
-  HTML                                                             |votl-html|
+The file extension used by votl is *.votl* and remains compatible with the
+existing *.otl* file format that *VimOutliner* uses.
+
+Jump to all the |votl-commands|.
+
+The votl enhancements not found in *VimOutliner* are:
+
+ - Cycle over folds under the current header with <Tab>.
+ - Quickly jumping between sections with the [[ ]] { } keystrokes.
+ - Better coloring and support for much finer grained syntax highlighting.
+ - Support for daily diary/journaling with a Calendar.
+ - New support for tagging and the ability to quickly search for tags.
+   Formatted exactly like Emacs org-mode tags.
+ - Support for RestructuredText formatted tables.
+ - Code cleanup/simplification and a better user experience.
+
+License                                                         |votl-license|
+Version                                                         |votl-version|
+Objects                                                         |votl-objects|
+Calendar                                                       |votl-calendar|
+Tags                                                               |votl-tags|
+Checkboxes                                                   |votl-checkboxes|
+Commands                                                       |votl-commands|
+Colors                                                           |votl-colors|
+HTML                                                               |votl-html|
 
 ============================================================================
                                                                 *votl-license*
@@ -81,7 +96,7 @@ Here is an example:
         : signals. He is affectionate, playful and attentive.
         :
         : His breeding is unknown. He appears to be a mix between
-        : a german shepherd and a collie.
+        : a German Shepherd and a Collie.
 <
 
 When folded, body text looks something like this:
@@ -148,11 +163,11 @@ The other, and much better, format supported by votl is the
         +--------+-----+--------+----------------+
 <
 
-Your first thought might be that this format would be very difficult
-to maintain by hand and you're right. Fortunately there is a really
-great Vim plugin to automate the table creation and flow. This plugin
-is named *vim-rst-tables* and can be download from git. There is also
-a nice video showing its functionality.
+Your first thought might be that this format would be very difficult to
+maintain by hand and you're right. Fortunately there is an awesome Vim
+plugin by Vincent Driessen that automates the table creation and flow. This
+plugin is named *vim-rst-tables* and can be downloaded from git. There is
+also a nice video showing its functionality.
 >
     vim-rst-tables:  https://github.com/nvie/vim-rst-tables
     video demo:      http://vimeo.com/14300874
@@ -183,7 +198,7 @@ For example:
         > signals. He is affectionate, playful and attentive.
         >
         > His breeding is unknown. He appears to be a mix between
-        > a german shepherd and a collie.
+        > a German Shepherd and a Collie.
 <
 
 When folded, user-defined text looks something like this:
@@ -279,52 +294,230 @@ where all your knowledge, no matter what its format, exists within a single
 tree of outlines connected with external links and executable lines.
 
 ============================================================================
-                                                                 *votl-colors*
-Colors~
+                                                               *votl-calendar*
+Calendar~
 
-Color schemes specify the colors votl uses when displaying an outline.
-Heading colors are specified by object and level. These objects currently
-include headings, body text, user text, and tables. Other color groups
-include executables, checkboxes, percentages, and dates/times.
-
-To override the color scheme add the following to your *.vimrc* file (see
-|highlight| for more information) and modify as needed:
+votl has built in support for daily entries like a journal or diary. This
+requires you have Yasuhiro Matsumoto's awesome Calendar plugin installed.
 >
-    function! MyVotlColors()
-          highlight OL1 ctermfg=lightblue
-          highlight OL2 ctermfg=red
-          highlight OL3 ctermfg=brown
-          highlight OL4 ctermfg=yellow
-          highlight OL5 ctermfg=lightblue
-          highlight OL6 ctermfg=red
-          highlight OL7 ctermfg=brown
-          highlight OL8 ctermfg=yellow
-          highlight OL8 ctermfg=white
-
-          " color for body text
-          for i in range(1, 9)
-             execute "highlight BT" . i . " ctermfg=lightgreen"
-          endfor
-
-          " ...etc...
-    endfunction
-    autocmd FileType votl call MyVotlColors()
+    calendar: http://www.vim.org/scripts/script.php?script_id=52
 <
 
-Highlight groups used by votl are:
+Open up your votl file and execute ',,jc'. This will bring up the calendar.
+Type '?' to learn how to move around in the Calendar. Move the cursor over
+a date and hit <Enter>. This will jump to a special heading in your votl
+file under the top level header named *Journal* which can be located anywhere
+in the file. If this header does not exist then it will be automatically
+created at the bottom of the file. For example, assume I highlight 4/8/12
+I would end up with with the following headlines and the cursor on that day.
+Now I can enter my journal/diary/meeting/notes/etc for that day.
+>
+       <Prev Today Next>  |
+                          |
+         2012/4(Apr)      |-Journal
+     Su Mo Tu We Th Fr Sa |+  2011 ------------------------------------------
+      1  2  3  4  5  6  7 |-  2012
+      8  9 10 11 12 13 14 |-    2012-04
+     15 16 17 18 19 20 21 |-      2012-04-08
+     22 23 24 25 26 27 28 |-        : Now is the time for all good men
+     29 30                |5        : to come to the aid of their country.
+                          |+    2012-09 -------------------------------------
+         2012/5(May)      |+    2012-10 -------------------------------------
+     Su Mo Tu We Th Fr Sa | ~
+            1  2  3  4  5 | ~
+      6  7  8  9 10 11 12 | ~
+     13 14 15 16 17 18 19 | ~
+     20 21 22 23 24 25 26 | ~
+     27 28 29 30 31       | ~
+                          | ~
+         2012/6(Jun)      | ~
+     Su Mo Tu We Th Fr Sa | ~
+                     1  2 | ~
+      3  4  5  6  7  8  9 | ~
+     10 11 12 13 14 15 16 | ~
+     17 18 19 20 21 22 23 | ~
+     24 25 26 27 28 29 30 | ~
+                          | ~
+                          | ~
+    foo.votl -------------------------------------- [x32/d50] [10,4] [50] All
+<
 
-  *OL[1-9]*         headers
-  *BT[1-9]*         body text
-  *PT[1-9]*         preformatted body text
-  *UT[1-9]*         user-defined text
-  *UB[1-9]*         preformatted user-defined text
-  *VotlTags*        tags formatted as ':tag1:tag2:etc:'
-  *VotlDate*        'YYYY-MM-DD' date stamp
-  *VotlTime*        'HH-MM-SS' time stamp
-  *VotlCheckbox*    checkboxes
-  *VotlChecked*     'X' in a checkbox
-  *VotlPercentage*  percentage completions
-  *VotlTableLines*  lines for tables (table text inherits header color)
+The *Journal* is automatically sorted in ascending order at each level (i.e.
+by year, then by year-month, and finally by year-month-day). Whenever you
+enter a new entry it will be inserted in the proper location in the *Journal*
+(chronological order).
+
+Additionally, the Calendar plugin will show you which days you have journal
+entries with the date being highlighted in a different color.
+
+If you would like to jump to today's *Journal* entry then execute ',,jt'
+which bypasses the Calendar and quickly jumps to the entry.
+
+============================================================================
+                                                                   *votl-tags*
+Tags~
+
+votl supports inline tags for tracking that can be used in a future query.
+A header can have any number of tags assigned to it and the format for tags
+are:
+
+  :tag1:           for a single tag
+  :tag1:tag2:      for two tags
+  :tag1:tag3:etc:  for any number of tags
+
+A tag is required to have a space both before the first ':' and after the
+last ':' (or be at the end of the line). Note that a tag cannot exist at
+the beginning of the line. If a tag is at the end of the line votl can easily
+right align it to the |textwidth| using the ',,gr' command. This will align
+the tag (if it exists) on the line under the cursor. You can also specify a
+range or select a visual range to align tags for multiple lines.
+
+Example:
+
+  Test                                               :a:b:d:
+    foo                                                :foo:
+      bar :test:fail: geek
+    doh                                           :blah:foo:
+
+Tags can be deleted using the ',,gd' command. Any tags found on the line will
+be deleted. Additionally, you can specify a range or select a visual range to
+delete tags for multiple lines.
+
+A tag can be easily queried (i.e. grep'ed for) using the *:VotlTag* *<tag>*
+command. This command searches the current buffer for the specific tag,
+creates a location list, and opens up the |location-list| window for the
+buffer.
+
+The *:VotlTag* command supports <Tab> completion for the tag name.
+
+Example (executing *:VotlTag* *foo* to query the *foo* tag):
+
+  Test                                               :a:b:d:
+    foo                                                :foo:
+      bar :test:fail: geek
+    doh                                           :blah:foo:
+  test.votl ----------------------- [x54/d84] [1,1] [95] All
+  | foo                                                :foo:
+  | doh                                           :blah:foo:
+
+Inside the |location-list| window hitting <Enter> on any line will jump
+to that line in the votl file and open all folds needed to view the line.
+To jump around use the |:lne| and |:lpr| commands. To close the |location-list|
+window use |:lcl| and |:lop| to open it back up.
+
+============================================================================
+                                                             *votl-checkboxes*
+Checkboxes~
+
+Checkboxes enable votl to understand tasks and calculate the current
+status of todo lists. Three special notations are used:
+>
+    [_]   an unchecked item or incomplete task
+    [X]   a checked item or complete task
+    %     a placeholder for percentage of completion
+<
+
+Example. Let's plan a barbecue.
+
+1. Make the initial outline.
+>
+    Barbecue
+        Guests
+            Bill and Barb
+            Larry and Louise
+            Marty and Mary
+        Food
+            Chicken
+            Ribs
+            Corn on the cob
+        Beverages
+            Soda
+            Beer
+        Materials
+            Paper Plates
+            Napkins
+            Cups
+<
+
+2. Add the check boxes.
+
+This can be done by visually selecting them and typing ',,cb'. When done
+you should see this:
+>
+    [_] Barbecue
+        [_] Guests
+            [_] Bill and Barb
+            [_] Larry and Louise
+            [_] Marty and Mary
+        [_] Food
+            [_] Chicken
+            [_] Ribs
+            [_] Corn on the cob
+        [_] Beverages
+            [_] Soda
+            [_] Beer
+        [_] Materials
+            [_] Paper Plates
+            [_] Napkins
+            [_] Cups
+<
+
+3. Now check off what's done.
+
+Check off what is complete with the ',,cx' command. Just place the cursor on
+a heading and ',,cx' it. Note that a heading with children will only, and
+automatically, get checked when each of its children are complete.
+>
+    [_] Barbecue
+        [X] Guests
+            [X] Bill and Barb
+            [X] Larry and Louise
+            [X] Marty and Mary
+        [_] Food
+            [X] Chicken
+            [X] Ribs
+            [_] Corn on the cob
+        [_] Beverages
+            [_] Soda
+            [X] Beer
+        [_] Materials
+            [X] Paper Plates
+            [_] Napkins
+            [X] Cups
+<
+
+4. Add percentages for a better view.
+
+You can get a much better view of what's going on, especially with collapsed
+headings, if you add percentages. Visually select all the items and execute
+',,cp'. Note that you can manually add a percentage to single lines (i.e. a
+'%' character with a single space before and after it). Put this after the
+checkbox and before the heading. Thereafter you can manually update the
+completion percentages with the ',,cu' command. Note that all the other
+',,c[bBpPx]' commands update the percentages automatically (if they exist).
+>
+    [_] 70% Barbecue
+        [X] 100% Guests
+            [X] 100% Bill and Barb
+            [X] 100% Larry and Louise
+            [X] 100% Marty and Mary
+        [_] 66% Food
+            [X] 100% Chicken
+            [X] 100% Ribs
+            [_] 0% Corn on the cob
+        [_] 50% Beverages
+            [_] 0% Soda
+            [X] 100% Beer
+        [_] 66% Materials
+            [X] 100% Paper Plates
+            [_] 0% Napkins
+            [X] 100% Cups
+<
+
+5. Complete a few more just for fun.
+
+When you ',,cx' any lines (to complete or uncomplete it) you'll see the
+percentages automatically recalculated in each header.
 
 ============================================================================
                                                                *votl-commands*
@@ -380,11 +573,11 @@ Time and Date~
 Checkboxes~
 
   ,,cb  normal  Insert a checkbox on the current line or range 
-  ,,c%  normal  Insert a checkbox with percentage placeholder
-  ,,cp  normal  Insert a checkbox with percentage placeholder on all headings
-  ,,cd  normal  Delete a checkbox on the current line or range
+  ,,cB  normal  Delete a checkbox on the current line or range
+  ,,cp  normal  Insert a checkbox with percentage placeholder
+  ,,cP  normal  Delete a checkbox percentage on the current line or range
   ,,cx  normal  Toggle checkbox state and update completion percentages
-  ,,cz  normal  Update completion percentages for the current tree
+  ,,cu  normal  Update completion percentages for the current tree
 
 Tags~
 
@@ -413,259 +606,54 @@ Other~
   ,,e  normal  Execute the executable tag line under cursor
   ,,w  insert  Save changes and return to insert mode
   ,,W  normal  Export to HTML (foobar.votl -> foobar_votl.html)
-  ,,g  normal  Search for tag under the cursor
 
 ============================================================================
-                                                                   *votl-tags*
-Tags~
+                                                                 *votl-colors*
+Colors~
 
-votl supports inline tags for tracking that can be used in a future query.
-A header can have any number of tags assigned to it and the format for tags
-are:
+Color schemes specify the colors votl uses when displaying an outline.
+Heading colors are specified by object and level. These objects currently
+include headings, body text, user text, and tables. Other color groups
+include executables, checkboxes, percentages, and dates/times.
 
-  :tag1:           for a single tag
-  :tag1:tag2:      for two tags
-  :tag1:tag3:etc:  for any number of tags
-
-A tag is required to have a space both before the first ':' and after the
-last ':' (or be at the end of the line). Note that a tag cannot exist at
-the beginning of the line. If a tag is at the end of the line votl can easily
-right align it to the |textwidth| using the ',,gr' command. This will align
-the tag (if it exists) on the line under the cursor. You can also specify a
-range or select a visual range to align tags for multiple lines.
-
-Example:
-
-  Test                                               :a:b:d:
-    foo                                                :foo:
-      bar :test:fail: geek
-    doh                                           :blah:foo:
-
-Tags can be deleted using the ',,gd' command. Any tags found on the line will
-be deleted. Additionally, you can specify a range or select a visual range to
-delete tags for multiple lines.
-
-A tag can be easily queried (i.e. grep'ed for) using the *:VotlTag* *<tag>*
-command. This command searches the current buffer for the specific tag,
-creates a location list, and opens up the |location-list| window for the
-buffer.
-
-The *:VotlTag* command supports <Tab> completion for the tag name.
-
-Example (executing *:VotlTag* *foo* to query the *foo* tag):
-
-  Test                                               :a:b:d:
-    foo                                                :foo:
-      bar :test:fail: geek
-    doh                                           :blah:foo:
-  test.votl ----------------------- [x54/d84] [1,1] [95] All
-  | foo                                                :foo:
-  | doh                                           :blah:foo:
-
-Inside the |location-list| window hitting <Enter> on any line will jump
-to that line in the votl file and open all folds needed to view the line.
-To jump around use the |:lne| and |:lpr| commands. To close the |location-list|
-window use |:lcl| and |:lop| to open it back up.
-
-============================================================================
-                                                               *votl-calendar*
-Calendar~
-
-votl has built in support for daily entries like a journal or diary. This
-requires you have Yasuhiro Matsumoto's awesome Calendar plugin installed
-(http://goo.gl/cGgI).
-
-Open up your votl file and execute ',,jc'. This will bring up the calendar.
-Type '?' to learn how to move around in the Calendar. Move the cursor over
-a date and hit <Enter>. This will jump to a special heading in your votl
-file under the top level header named *Journal* which can be located anywhere
-in the file. If this header does not exist then it will be automatically
-created at the bottom of the file. For example, assume I highlight 4/8/12
-I would end up with with the following headlines and the cursor on that day.
-Now I can enter my journal/diary/meeting/notes/etc for that day.
+To override the color scheme add the following to your *.vimrc* file (see
+|highlight| for more information) and modify as needed:
 >
-    Journal
-        2011 ---------------------------------------------------------
-        2012
-            2012-04
-                2012-04-01 -------------------------------------------
-                2012-04-08
-                    : Now is the time for all good men to come
-                    : to the aid of their country.
-            2012-09 --------------------------------------------------
-            2012-10 --------------------------------------------------
+    function! MyVotlColors()
+          highlight OL1 ctermfg=lightblue
+          highlight OL2 ctermfg=red
+          highlight OL3 ctermfg=brown
+          highlight OL4 ctermfg=yellow
+          highlight OL5 ctermfg=lightblue
+          highlight OL6 ctermfg=red
+          highlight OL7 ctermfg=brown
+          highlight OL8 ctermfg=yellow
+          highlight OL8 ctermfg=white
+
+          " color for body text
+          for i in range(1, 9)
+             execute "highlight BT" . i . " ctermfg=lightgreen"
+          endfor
+
+          " ...etc...
+    endfunction
+    autocmd FileType votl call MyVotlColors()
 <
 
-The *Journal* is automatically sorted in ascending order at each level (i.e.
-by year, then by year-month, and finally by year-month-day). Whenever you
-enter a new entry it will be inserted in the proper location in the *Journal*
-(chronological order).
+Highlight groups used by votl are:
 
-Additionally, the Calendar plugin will show you which days you have journal
-entries with the date being highlighted in a different color.
-
-If you would like to jump to today's *Journal* entry then execute ',,jt'
-which bypasses the Calendar and quickly jumps to the entry.
-
-============================================================================
-                                                             *votl-checkboxes*
-Checkboxes~
-
-Checkboxes enable votl to understand tasks and calculate the current
-status of todo lists. Three special notations are used:
->
-    [_]   an unchecked item or incomplete task
-    [X]   a checked item or complete task
-    %     a placeholder for percentage of completion
-<
-
-Example. Let's plan a barbeque.
-
-1. Make the initial outline.
->
-    Barbeque
-        Guests
-            Bill and Barb
-            Larry and Louise
-            Marty and Mary
-        Food
-            Chicken
-            Ribs
-            Corn on the cob
-        Beverages
-            Soda
-            Beer
-        Materials
-            Paper Plates
-            Napkins
-            Cups
-<
-
-2. Add the check boxes.
-
-This can be done by visually selecting them and typing ',,cb'. When done
-you should see this:
->
-    [_] Barbeque
-        [_] Guests
-            [_] Bill and Barb
-            [_] Larry and Louise
-            [_] Marty and Mary
-        [_] Food
-            [_] Chicken
-            [_] Ribs
-            [_] Corn on the cob
-        [_] Beverages
-            [_] Soda
-            [_] Beer
-        [_] Materials
-            [_] Paper Plates
-            [_] Napkins
-            [_] Cups
-<
-
-3. Now check off what's done.
-
-Check off what is complete with the ',,cx' command. Just place the cursor on
-a heading and ',,cx' it. Now you can see what's done as long as the outline
-is fully expanded.
->
-    [_] Barbeque
-        [_] Guests
-            [X] Bill and Barb
-            [X] Larry and Louise
-            [X] Marty and Mary
-        [_] Food
-            [X] Chicken
-            [X] Ribs
-            [_] Corn on the cob
-        [_] Beverages
-            [_] Soda
-            [X] Beer
-        [_] Materials
-            [X] Paper Plates
-            [_] Napkins
-            [X] Cups
-<
-
-4. Now summarize what's done.
-
-You can summarize what is done with the ',,cz' command. Place the cursor on
-the 'Barbeque' heading and ',,cz' it. The command will recursively process
-the outline and update the check boxes of the parent headlines. You should
-see (the only change is on the 'Guests' heading because all of its children
-are complete):
->
-    [_] Barbeque
-        [X] Guests
-            [X] Bill and Barb
-            [X] Larry and Louise
-            [X] Marty and Mary
-        [_] Food
-            [X] Chicken
-            [X] Ribs
-            [_] Corn on the cob
-        [_] Beverages
-            [_] Soda
-            [X] Beer
-        [_] Materials
-            [X] Paper Plates
-            [_] Napkins
-            [X] Cups
-<
-
-5. Add percentages for a better view.
-
-You can get a much better view of what's going on, especially with collapsed
-headings, if you add percentages. Place a '%' on each heading that has
-children like this:
->
-    [_] % Barbeque
-        [X] % Guests
-            [X] Bill and Barb
-            [X] Larry and Louise
-            [X] Marty and Mary
-        [_] % Food
-            [X] Chicken
-            [X] Ribs
-            [_] Corn on the cob
-        [_] % Beverages
-            [_] Soda
-            [X] Beer
-        [_] % Materials
-            [X] Paper Plates
-            [_] Napkins
-            [X] Cups
-<
-
-6. Now compute the percentage of completion.
-
-After adding the '%' symbols, place the cursor on the 'Barbeque' heading and
-execute ',,cz' as before. Keep in mind that the recursive percentages are
-weighted. You should see:
->
-    [_] 70% Barbeque
-        [X] 100% Guests
-            [X] Bill and Barb
-            [X] Larry and Louise
-            [X] Marty and Mary
-        [_] 66% Food
-            [X] Chicken
-            [X] Ribs
-            [_] Corn on the cob
-        [_] 50% Beverages
-            [_] Soda
-            [X] Beer
-        [_] 66% Materials
-            [X] Paper Plates
-            [_] Napkins
-            [X] Cups
-<
-
-7. Complete a few more just for fun.
-
-When you ',,cx' any lines (to complete or uncomplete it) you'll see the
-percentages automatically recalculated in each header.
+  *OL[1-9]*         headers
+  *BT[1-9]*         body text
+  *BP[1-9]*         preformatted body text
+  *UT[1-9]*         user-defined text
+  *UP[1-9]*         preformatted user-defined text
+  *VotlTags*        tags formatted as ':tag1:tag2:etc:'
+  *VotlDate*        'YYYY-MM-DD' date stamp
+  *VotlTime*        'HH-MM-SS' time stamp
+  *VotlCheckbox*    checkboxes
+  *VotlChecked*     'X' in a checkbox
+  *VotlPercentage*  percentage completions
+  *VotlTableLines*  lines for tables (table text inherits header color)
 
 ============================================================================
                                                                    *votl-html*
@@ -679,18 +667,21 @@ exactly like the outline text in your terminal with all folds unfolded.
                                                                 *votl-version*
 Version~
 
-  Version 0.1 (2012-09-12)
+  Version 0.1 (2012-09-22)
     - Initial release
     - forked from VimOutliner
-        . removed support for interoutline linking
+        . major code cleanup, refactored, and simplified
         . removed all old/outdated scripts
         . removed the smart_paste and hoist plugins
         . incorporated the checkbox plugin as native
-        . major code cleanup and simplification
-        . new file type and extension *votl* - compatible with *otl*
-    - added support for quickly jumping between sections
-    - added support for journaling with the *Calendar.vim* Vim plugin
-
+        . removed support for inter-outline linking
+    - new file type and extension *votl* - compatible with *otl*
+    - better coloring and much finer grained syntax highlighting
+    - support for cycling over folds under the current header
+    - support for quickly jumping between sections
+    - support for tagging (like Emacs org-mode tags)
+    - support for journaling with the *Calendar.vim* Vim plugin
+    - support for RestructuredText tables with the *vim-rst-tables* Vim plugin
 
 vim:set filetype=help textwidth=78:
 ```

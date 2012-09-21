@@ -73,6 +73,18 @@ function! s:VotlIndent(line) "{{{
     return indent(a:line) / &tabstop
 endfunction "}}}
 
+" Get the root parent for any child
+function! s:VotlFindRootParent(line) "{{{
+    if s:VotlIndent(a:line) == 0
+        return (a:line)
+    endif
+    let l:i = a:line
+    while l:i > 1 && s:VotlIndent(l:i) > 0
+        let l:i = l:i - 1
+    endwhile
+    return l:i
+endfunction "}}}
+
 " Return 1 if this line is a parent
 function! VotlIsParent(line) "{{{
     return (s:VotlIndent(a:line)+1) == s:VotlIndent(a:line+1)
@@ -373,11 +385,11 @@ function VotlInsertDateTime(location, stamp) "{{{
     endif
 
     if a:location == 0
-        let l:line = getline(line("."))
-        if match(l:line, "\\v(^\\s*\\[.\\] )@<=\\d*\\%\\s") != -1
+        let l:line = getline(".")
+        if match(l:line, '\v(^\s*\[.\] )@<=\d*\%\s') != -1
             " insert date after a checkbox/percentage
             execute "normal! ^2W\"xPa \<esc>^"
-        elseif match(l:line, "\\v^\\s*\\[.\\]\\s") != -1
+        elseif match(l:line, '\v^\s*\[.\]\s') != -1
             " insert date after a checkbox
             execute "normal! ^W\"xPa \<esc>^"
         else
@@ -385,8 +397,8 @@ function VotlInsertDateTime(location, stamp) "{{{
             execute "normal! ^\"xPa \<esc>^"
         endif
     else " a:location == 1
-        let l:line = getline(line("."))
-        if match(l:line, "\\v\\s:(\\w+:)+\\s*$") != -1
+        let l:line = getline(".")
+        if match(l:line, '\v\s:(\w+:)+\s*$') != -1
             " insert date before the trailing tags
             execute "normal! $Bgelcw \<esc>\"xpa \<esc>^"
         else
@@ -488,7 +500,7 @@ endfunction "}}}
 
 " Execute an executable line
 function VotlSpawn() "{{{
-    let theline = getline(line("."))
+    let theline = getline(".")
     let idx = matchend(theline, "_exe_\\s*")
     if idx == -1
         echo "Not an executable line"
@@ -658,83 +670,67 @@ function! VotlGotoToday() "{{{
     call VotlCalendarAction(l:day, l:month, l:year, 0, 'X')
 endfunction "}}}
 
-" Insert a checkbox at the beginning of a header without disturbing
-" the current folding only if there is no checkbox already.
-function! VotlInsertCheckBox() "{{{
-    if match(getline("."), "^\t\t*\[<>:;|\]") != -1
+" Insert a checkbox at the beginning of a header
+function! VotlInsertCheckbox() "{{{
+    let l:line = getline(".")
+    if match(l:line, '\v^\t*[<>:;|+]') != -1
         return
     endif
-    if match(getline("."), "[\[X_\]]") == -1
-        let @x = "[_] "
-        normal! ^"xP
+    if match(l:line, '\v^\t*\[[X_]\] ') == -1
+        execute "normal! ^i[_] \<esc>^"
+        call VotlComputeHowMuchDone(s:VotlFindRootParent(line(".")))
     endif
 endfunction "}}}
 
 " Delete a checkbox if one exists
 function! VotlDeleteCheckbox() "{{{
-   let questa = strridx(getline("."),"[_]")
-   let questb = strridx(getline("."),"[X]")
-   if (questa != -1) || (questb != -1)
-       if (questa != -1) 
-          substitute/\(^\s*\)\[_\] \(.*\)/\1\2/
-       else
-          substitute/\(^\s*\)\[X\] \(.*\)/\1\2/
-       endif
-   endif
+    let l:line = getline(".")
+    if match(l:line, '\v^\t*\[[X_]\] \d*\% ') != -1
+        execute "normal! ^2dW^"
+        call VotlComputeHowMuchDone(s:VotlFindRootParent(line(".")))
+    elseif match(l:line, '\v^\t*\[[X_]\] ') != -1
+        execute "normal! ^dW^"
+        call VotlComputeHowMuchDone(s:VotlFindRootParent(line(".")))
+    endif
 endfunction "}}}
 
-" Insert a checkbox and % sign at the beginning of a header without
-" disturbing the current folding only if there is no checkbox already.
-function! VotlInsertCheckBoxPercent() "{{{
-    if match(getline("."), "^\t\t*\[<>:;|\]") != -1
+" Insert a checkbox and percent at the beginning of a header
+function! VotlInsertCheckboxPercent() "{{{
+    let l:line = getline(".")
+    if match(l:line, '\v^\t*[<>:;|+]') != -1
         return
     endif
-    if match(getline("."), "[\[X_\]]") == -1
-        if s:VotlIndent(line(".")+1) > s:VotlIndent(line("."))
-            let @x = "[_] % "
-        else
-            let @x = "[_] "
-        endif
-        normal! ^"xP
+    call VotlInsertCheckbox() " adds the box if it doesn't exist
+    if match(l:line, '\v^\t*\[[X_]\] \d*\% ') == -1
+        "if s:VotlIndent(line(".")+1) > s:VotlIndent(line("."))
+            execute "normal! ^Wi% \<esc>^"
+            call VotlComputeHowMuchDone(s:VotlFindRootParent(line(".")))
+        "endif
     endif
 endfunction "}}}
 
-" Insert a checkbox and % sign at the beginning of a header without
-" disturbing the current folding only if there is no checkbox already.
-" Include the checkbox even on childless headings.
-function! VotlInsertCheckBoxPercentAlways() "{{{
-    if match(getline("."), "^\t\t*\[<>:;|\]") != -1
+" Delete a checkbox percentage if one exists
+function! VotlDeleteCheckboxPercent() "{{{
+    let l:line = getline(".")
+    if match(l:line, '\v^\t*\[[X_]\] \d*\% ') != -1
+        execute "normal! ^WdW^"
+        call VotlComputeHowMuchDone(s:VotlFindRootParent(line(".")))
+    endif
+endfunction "}}}
+
+" Switch the state of the checkbox and update percents
+function! VotlSwitchCheckbox() "{{{
+    call VotlInsertCheckbox() " adds the box if it doesn't exist
+    let l:line = getline(".")
+    if match(l:line, '\v^\t*\[[X_]\] ') == -1
         return
     endif
-    if match(getline("."), "[\[X_\]]") == -1
-        let @x = "[_] % "
-        normal! ^"xP
+    if match(l:line, '\v^\t*\[_\] ') != -1
+        execute "normal! ^lrX^"
+    elseif match(l:line, '\v^\t*\[X\] ') != -1
+        execute "normal! ^lr_^"
     endif
-endfunction "}}}
-
-" Switch the state of the checkbox on the current line.
-function! VotlSwitchBox() "{{{
-   let questa = strridx(getline("."),"[_]")
-   let questb = strridx(getline("."),"[X]")
-   if (questa != -1) || (questb != -1)
-       if (questa != -1) 
-          substitute/\[_\]/\[X\]/
-       else
-          substitute/\[X\]/\[_\]/
-       endif
-   endif
-endfunction "}}}
-
-" Get the root parent for any child
-function! VotlFindRootParent(line) "{{{
-    if s:VotlIndent(a:line) == 0
-        return (a:line)
-    endif
-    let l:i = a:line
-    while l:i > 1 && s:VotlIndent(l:i) > 0
-        let l:i = l:i - 1
-    endwhile
-    return l:i
+    call VotlComputeHowMuchDone(s:VotlFindRootParent(line(".")))
 endfunction "}}}
 
 " Calculates proportion of already done work in the subtree
@@ -869,7 +865,7 @@ function! VotlListTags(ArgLead, CmdLine, CursorPos) "{{{
 
     for l:i in range(1, line("$"))
         let l:line = getline(l:i)
-        let l:tags = matchstr(l:line, "\\v\\s:(\\w+:)+(\\s|$)", 0)
+        let l:tags = matchstr(l:line, '\v\s:(\w+:)+(\s|$)', 0)
         if l:tags == -1
             continue
         endif
@@ -900,7 +896,7 @@ function! VotlFindTag(tag) "{{{
     for l:i in range(1, line("$"))
         let l:line = getline(l:i)
         if match(l:line,
-                \"\\v\\s:(\\w+:)*".a:tag."(:\\w+)*:(\\s|$)") == -1
+                \'\v\s:(\w+:)*".a:tag."(:\w+)*:(\s|$)') == -1
             continue
         endif
         " can't figure out how to prevent quickfix from squashing
@@ -974,17 +970,17 @@ nmap <silent><buffer> }  :call cursor(VotlNextSibling(), 0)<cr>^
 nmap <silent><buffer> <localleader>jc :Calendar<cr>
 nmap <silent><buffer> <localleader>jt :call VotlGotoToday()<cr>
 
-" insert/delete a checkbox
-map <silent><buffer> <localleader>cb :call VotlInsertCheckBox()<cr>
-map <silent><buffer> <localleader>c% :call VotlInsertCheckBoxPercent()<cr>
-map <silent><buffer> <localleader>cp :call VotlInsertCheckBoxPercentAlways()<cr>
-map <silent><buffer> <localleader>cd :call VotlDeleteCheckbox()<cr>
+" insert/delete a checkbox and/or percentage
+map <silent><buffer> <localleader>cb :call VotlInsertCheckbox()<cr>
+map <silent><buffer> <localleader>cB :call VotlDeleteCheckbox()<cr>
+map <silent><buffer> <localleader>cp :call VotlInsertCheckboxPercent()<cr>
+map <silent><buffer> <localleader>cP :call VotlDeleteCheckboxPercent()<cr>
 
 " switch the status of the box
-map <silent><buffer> <localleader>cx :call VotlSwitchBox()<cr>:call VotlComputeHowMuchDone(VotlFindRootParent(line(".")))<cr>
+map <silent><buffer> <localleader>cx :call VotlSwitchCheckbox()<cr>
 
 " calculate the proportion of work done on the subtree
-map <silent><buffer> <localleader>cz :call VotlComputeHowMuchDone(VotlFindRootParent(line(".")))<cr>
+map <silent><buffer> <localleader>cu :call VotlComputeHowMuchDone(s:VotlFindRootParent(line(".")))<cr>
 
 " cycle over fold levels
 nmap <silent><buffer> <tab> :call VotlToggleFolding()<cr>
