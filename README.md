@@ -13,15 +13,19 @@ votl is an outline processor designed with lighting fast authoring as the
 main feature. Originally forked from *VimOutliner* and features include tree
 expand/collapse, tree promotion/demotion, level sensitive colors, checkboxes
 and completion percentages for todo lists, quick time/date entry, unformatted
-and formatted body text, tables, and support for calendar entries.
+and formatted body text, tables, and support for calendar entries. The file
+extension used by votl is *.votl* and remains compatible with the existing
+file format that *VimOutliner* uses.
 
   License                                                       |votl-license|
   Version                                                       |votl-version|
   Objects                                                       |votl-objects|
   Colors                                                         |votl-colors|
   Commands                                                     |votl-commands|
-  Checkboxes                                                 |votl-checkboxes|
+  Tags                                                             |votl-tags|
   Calendar                                                     |votl-calendar|
+  Checkboxes                                                 |votl-checkboxes|
+  HTML                                                             |votl-html|
 
 ============================================================================
                                                                 *votl-license*
@@ -38,7 +42,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 votl is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU General Public License for more details.
 
 See <http://www.gnu.org/licenses/>.
@@ -110,10 +114,13 @@ When folded, preformatted body text looks something like this:
 
 Tables~
 
-The table marker '|' is used to create tables. This is an excellent way to
-show tabular data. The marker is used as if it were are real vertical line.
-A '||' (double-|) is optionally used to mark a table heading line which is
-useful for post-processors.
+There are two types of table formats supported by votl. The original
+*VimOutliner* format and the *RestructuredText* format.
+
+The original *VimOutliner* format uses a table marker '|' to create tables.
+The marker is used as if it were are real vertical line. A double '||'
+is optionally used to mark a table heading line which is useful for
+post-processors.
 
 Here is an example:
 >
@@ -124,7 +131,37 @@ Here is an example:
         | Sophia |   9 |    cat |         inside |
 <
 
-There is no automatic alignment of columns and must be done manually.
+With the above format there is NO automatic alignment of columns.
+
+The other, and much better, format supported by votl is the
+*RestructuredText* format. The table above would be formatted as:
+>
+    Pets
+        +--------+-----+--------+----------------+
+        | Name   | Age | Animal | Inside/Outside |
+        +========+=====+========+================+
+        | Kirby  | 9   | dog    | both           |
+        +--------+-----+--------+----------------+
+        | Hoover | 1   | dog    | both           |
+        +--------+-----+--------+----------------+
+        | Sophia | 9   | cat    | inside         |
+        +--------+-----+--------+----------------+
+<
+
+Your first thought might be that this format would be very difficult
+to maintain by hand and you're right. Fortunately there is a really
+great Vim plugin to automate the table creation and flow. This plugin
+is named *vim-rst-tables* and can be download from git. There is also
+a nice video showing its functionality.
+>
+    vim-rst-tables:  https://github.com/nvie/vim-rst-tables
+    video demo:      http://vimeo.com/14300874
+<
+
+Regardless of the table format used the syntax coloring of the tables
+is the same for both. The color of the table "lines" is controlled
+with the VotlTableLines highlight group. The actual color of the text
+in the table cells is inherited from the current heading level.
 
 When folded, a table looks something like this:
 >
@@ -245,40 +282,49 @@ tree of outlines connected with external links and executable lines.
                                                                  *votl-colors*
 Colors~
 
-Color schemes specify the colors votl uses when displaying an outline. Colors
-are specified by object and level. These objects currently include headings,
-body text, user text, tables, and executables. See |vo-objects| for more
-information.
-
-votl comes with two color schemes. One for terminals with a light background
-and another for a dark background.
-
-To set the default color scheme just add the following to your *.vimrc* file:
->
-    " Uncomment one of these lines depending on your terminal background:
-    "set background=light
-    "set background=dark
-<
+Color schemes specify the colors votl uses when displaying an outline.
+Heading colors are specified by object and level. These objects currently
+include headings, body text, user text, and tables. Other color groups
+include executables, checkboxes, percentages, and dates/times.
 
 To override the color scheme add the following to your *.vimrc* file (see
-|highlight| for more information):
+|highlight| for more information) and modify as needed:
 >
     function! MyVotlColors()
           highlight OL1 ctermfg=lightblue
           highlight OL2 ctermfg=red
-          ...etc...
+          highlight OL3 ctermfg=brown
+          highlight OL4 ctermfg=yellow
+          highlight OL5 ctermfg=lightblue
+          highlight OL6 ctermfg=red
+          highlight OL7 ctermfg=brown
+          highlight OL8 ctermfg=yellow
+          highlight OL8 ctermfg=white
+
+          " color for body text
+          for i in range(1, 9)
+             execute "highlight BT" . i . " ctermfg=lightgreen"
+          endfor
+
+          " ...etc...
     endfunction
     autocmd FileType votl call MyVotlColors()
 <
 
 Highlight groups used by votl are:
 
-  *OL[1-9]*  headers
-  *BT[1-9]*  body text
-  *PT[1-9]*  preformatted body text
-  *TA[1-9]*  tables
-  *UT[1-9]*  user-defined text
-  *UB[1-9]*  preformatted user-defined text
+  *OL[1-9]*         headers
+  *BT[1-9]*         body text
+  *PT[1-9]*         preformatted body text
+  *UT[1-9]*         user-defined text
+  *UB[1-9]*         preformatted user-defined text
+  *VotlTags*        tags formatted as ':tag1:tag2:etc:'
+  *VotlDate*        'YYYY-MM-DD' date stamp
+  *VotlTime*        'HH-MM-SS' time stamp
+  *VotlCheckbox*    checkboxes
+  *VotlChecked*     'X' in a checkbox
+  *VotlPercentage*  percentage completions
+  *VotlTableLines*  lines for tables (table text inherits header color)
 
 ============================================================================
                                                                *votl-commands*
@@ -299,6 +345,20 @@ Movement~
   {   normal  Jump to previous section at same or higher level
   {   normal  Jump to next section at same or higher level
 
+Folding~
+
+  <Tab>  normal  Cycle through all tab levels under heading
+  ,,1    normal  set foldlevel=0
+  ,,2    normal  set foldlevel=1
+  ,,3    normal  set foldlevel=2
+  ,,4    normal  set foldlevel=3
+  ,,5    normal  set foldlevel=4
+  ,,6    normal  set foldlevel=5
+  ,,7    normal  set foldlevel=6
+  ,,8    normal  set foldlevel=7
+  ,,9    normal  set foldlevel=8
+  ,,0    normal  set foldlevel=99999
+
 Calendar~
 
   ,,jc  normal  Bring up calendar (requires calendar.vim plugin)
@@ -306,13 +366,16 @@ Calendar~
 
 Time and Date~
 
-  ,,t  normal  Append timestamp (HH:MM:SS) to heading
-  ,,t  insert  Insert timestamp (HH:MM:SS) at cursor
-  ,,T  normal  Prepend timestamp (HH:MM:SS) to heading
-  ,,d  normal  Append datestamp (YYYY-MM-DD) to heading
-  ,,d  insert  Insert datestamp (YYYY-MM-DD) at cursor
-  ,,D  normal  Prepend datestamp (YYYY-MM-DD) to heading
-  ,,x  normal  Prepend datestamp (YYYY-MM-DD) to heading after checkbox
+  date stamp       YYYY-MM-DD
+  time stamp       HH:MM:SS
+  date/time stamp  YYYY-MM-DD HH:MM:SS
+
+  ,,d  normal  Prepend date to heading (after any checkbox/percentage)
+  ,,D  normal  Append date to heading (before any trailing tags)
+  ,,t  normal  Prepend time to heading (after any checkbox/percentage)
+  ,,T  normal  Append time to heading (before any trailing tags)
+  ,,x  normal  Prepend date/time to heading (after any checkbox/percentage)
+  ,,X  normal  Append date/time to heading (before any trailing tags)
 
 Checkboxes~
 
@@ -323,18 +386,13 @@ Checkboxes~
   ,,cx  normal  Toggle checkbox state and update completion percentages
   ,,cz  normal  Update completion percentages for the current tree
 
-Folding~
+Tags~
 
-  ,,1  all  set foldlevel=0
-  ,,2  all  set foldlevel=1
-  ,,3  all  set foldlevel=2
-  ,,4  all  set foldlevel=3
-  ,,5  all  set foldlevel=4
-  ,,6  all  set foldlevel=5
-  ,,7  all  set foldlevel=6
-  ,,8  all  set foldlevel=7
-  ,,9  all  set foldlevel=8
-  ,,0  all  set foldlevel=99999
+  ,,gr  normal  Right align tags at end of line
+  ,,gr  visual  Right align tags at end of line for a range of lines
+  ,,gd  normal  Delete all tags on the line
+  ,,gd  visual  Delete all tags on the line for a range of lines
+  ,,gf  normal  Find all occurrences of the tag under the cursor
 
 Formatting~
 
@@ -344,16 +402,110 @@ Formatting~
   ,,B    normal  Change body text start with a space
   >>     normal  Demote headline
   <<     normal  Promote headline
-  >      visual  Demote range of headlines
-  <      visual  Promote range of headlines
+  >      visual  Demote a range of headlines
+  <      visual  Promote a range of headlines
   <C-T>  insert  Demote headline
   <C-D>  insert  Promote headline
 
 Other~
 
   ,,-  all     Draw dashed line
-  ,,w  insert  Save changes and return to insert mode
   ,,e  normal  Execute the executable tag line under cursor
+  ,,w  insert  Save changes and return to insert mode
+  ,,W  normal  Export to HTML (foobar.votl -> foobar_votl.html)
+  ,,g  normal  Search for tag under the cursor
+
+============================================================================
+                                                                   *votl-tags*
+Tags~
+
+votl supports inline tags for tracking that can be used in a future query.
+A header can have any number of tags assigned to it and the format for tags
+are:
+
+  :tag1:           for a single tag
+  :tag1:tag2:      for two tags
+  :tag1:tag3:etc:  for any number of tags
+
+A tag is required to have a space both before the first ':' and after the
+last ':' (or be at the end of the line). Note that a tag cannot exist at
+the beginning of the line. If a tag is at the end of the line votl can easily
+right align it to the |textwidth| using the ',,gr' command. This will align
+the tag (if it exists) on the line under the cursor. You can also specify a
+range or select a visual range to align tags for multiple lines.
+
+Example:
+
+  Test                                               :a:b:d:
+    foo                                                :foo:
+      bar :test:fail: geek
+    doh                                           :blah:foo:
+
+Tags can be deleted using the ',,gd' command. Any tags found on the line will
+be deleted. Additionally, you can specify a range or select a visual range to
+delete tags for multiple lines.
+
+A tag can be easily queried (i.e. grep'ed for) using the *:VotlTag* *<tag>*
+command. This command searches the current buffer for the specific tag,
+creates a location list, and opens up the |location-list| window for the
+buffer.
+
+The *:VotlTag* command supports <Tab> completion for the tag name.
+
+Example (executing *:VotlTag* *foo* to query the *foo* tag):
+
+  Test                                               :a:b:d:
+    foo                                                :foo:
+      bar :test:fail: geek
+    doh                                           :blah:foo:
+  test.votl ----------------------- [x54/d84] [1,1] [95] All
+  | foo                                                :foo:
+  | doh                                           :blah:foo:
+
+Inside the |location-list| window hitting <Enter> on any line will jump
+to that line in the votl file and open all folds needed to view the line.
+To jump around use the |:lne| and |:lpr| commands. To close the |location-list|
+window use |:lcl| and |:lop| to open it back up.
+
+============================================================================
+                                                               *votl-calendar*
+Calendar~
+
+votl has built in support for daily entries like a journal or diary. This
+requires you have Yasuhiro Matsumoto's awesome Calendar plugin installed
+(http://goo.gl/cGgI).
+
+Open up your votl file and execute ',,jc'. This will bring up the calendar.
+Type '?' to learn how to move around in the Calendar. Move the cursor over
+a date and hit <Enter>. This will jump to a special heading in your votl
+file under the top level header named *Journal* which can be located anywhere
+in the file. If this header does not exist then it will be automatically
+created at the bottom of the file. For example, assume I highlight 4/8/12
+I would end up with with the following headlines and the cursor on that day.
+Now I can enter my journal/diary/meeting/notes/etc for that day.
+>
+    Journal
+        2011 ---------------------------------------------------------
+        2012
+            2012-04
+                2012-04-01 -------------------------------------------
+                2012-04-08
+                    : Now is the time for all good men to come
+                    : to the aid of their country.
+            2012-09 --------------------------------------------------
+            2012-10 --------------------------------------------------
+<
+
+The *Journal* is automatically sorted in ascending order at each level (i.e.
+by year, then by year-month, and finally by year-month-day). Whenever you
+enter a new entry it will be inserted in the proper location in the *Journal*
+(chronological order).
+
+Additionally, the Calendar plugin will show you which days you have journal
+entries with the date being highlighted in a different color.
+
+If you would like to jump to today's *Journal* entry then execute ',,jt'
+which bypasses the Calendar and quickly jumps to the entry.
 
 ============================================================================
                                                              *votl-checkboxes*
@@ -438,8 +590,8 @@ is fully expanded.
 
 4. Now summarize what's done.
 
-You can summarize what is done with the ',,cz' command.  Place the cursor on
-the 'Barbeque' heading and ',,cz' it.  The command will recursively process
+You can summarize what is done with the ',,cz' command. Place the cursor on
+the 'Barbeque' heading and ',,cz' it. The command will recursively process
 the outline and update the check boxes of the parent headlines. You should
 see (the only change is on the 'Guests' heading because all of its children
 are complete):
@@ -465,7 +617,7 @@ are complete):
 5. Add percentages for a better view.
 
 You can get a much better view of what's going on, especially with collapsed
-headings, if you add percentages.  Place a '%' on each heading that has
+headings, if you add percentages. Place a '%' on each heading that has
 children like this:
 >
     [_] % Barbeque
@@ -516,44 +668,12 @@ When you ',,cx' any lines (to complete or uncomplete it) you'll see the
 percentages automatically recalculated in each header.
 
 ============================================================================
-                                                               |votl-calendar|
-Calendar~
+                                                                   *votl-html*
+HTML~
 
-votl has built in support for daily entries like a journal or diary. This
-requires you have Yasuhiro Matsumoto's awesome Calendar plugin installed
-(http://goo.gl/cGgI).
-
-Open up your votl file and execute ',,jc'. This will bring up the calendar.
-Type '?' to learn how to move around in the Calendar. Move the cursor over
-a date and hit <Enter>. This will jump to a special heading in your votl
-file under the top level header named *Journal* which can be located anywhere
-in the file. If this header does not exist then it will be automatically
-created at the bottom of the file.  For example, assume I highlight 4/8/12
-I would end up with with the following headlines and the cursor on that day.
-Now I can enter my journal/diary/meeting/notes/etc for that day.
->
-    Journal
-        2011 ---------------------------------------------------------
-        2012
-            2012-04
-                2012-04-01 -------------------------------------------
-                2012-04-08
-                    : Now is the time for all good men to come
-                    : to the aid of their country.
-            2012-09 --------------------------------------------------
-            2012-10 --------------------------------------------------
-<
-
-The *Journal* is automatically sorted in ascending order at each level (i.e.
-by year, then by year-month, and finally by year-month-day). Whenever you
-enter a new entry it will be inserted in the proper location in the *Journal*
-(chronological order).
-
-Additionally, the Calendar plugin will show you which days you have journal
-entries with the date being highlighted in a different color.
-
-If you would like to jump to today's *Journal* entry then execute ',,jt'
-which bypasses the Calendar and quickly jumps to the entry.
+A votl file can easily be exported to HTML using the ',,W' command. This
+export utilizes the Vim builtin |TOhtml| exporter. The final HTML will look
+exactly like the outline text in your terminal with all folds unfolded.
 
 ============================================================================
                                                                 *votl-version*
