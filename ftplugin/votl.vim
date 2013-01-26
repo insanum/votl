@@ -443,6 +443,11 @@ function! VotlPreTable(line) "{{{
     return (match(getline(a:line), "^\t*[|+]") == 0)
 endfunction "}}}
 
+" Is the line empty?
+function! VotlEmpty(line) "{{{
+    return (getline(a:line) =~ '\v^\s*$')
+endfunction "}}}
+
 " Determine the fold level of a line.
 function VotlFoldLevel(line) "{{{
     let l:myindent = s:VotlIndent(a:line)
@@ -487,14 +492,10 @@ function VotlFoldLevel(line) "{{{
         endif
         return (l:myindent+1)
     else
-        let l:nextindent = s:VotlIndent(a:line+1)
-        if l:myindent < l:nextindent
-            return '>'.(l:myindent+1)
+        if VotlEmpty(a:line)
+            return 0
         endif
-        if l:myindent > l:nextindent
-            return '<'.(l:myindent+1)
-        endif
-        return l:myindent
+        return '>'.(l:myindent+1)
     endif
 endfunction "}}}
 
