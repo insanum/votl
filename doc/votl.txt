@@ -635,7 +635,7 @@ To override the color scheme add the following to your *.vimrc* file (see
           highlight OL6 ctermfg=red
           highlight OL7 ctermfg=brown
           highlight OL8 ctermfg=yellow
-          highlight OL8 ctermfg=white
+          highlight OL9 ctermfg=white
 
           " color for body text
           for i in range(1, 9)
