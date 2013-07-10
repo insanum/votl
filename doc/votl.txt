@@ -4,18 +4,18 @@
 votl - Vim Outliner~
 
 votl is an outline processor designed for super fast authoring. It was
-originally forked from *VimOutliner* and features include tree expand and
+originally forked from VimOutliner and features include tree expand and
 collapse, tree promotion and demotion, sorting children, level sensitive
 colors, checkboxes and completion percentages for todo lists, tags, quick
 time and date entry, unformatted and formatted body text, tables, and
 support for calendar entries.
 
-The file extension used by votl is *.votl* and remains compatible with the
-existing *.otl* file format that *VimOutliner* uses.
+The file extension used by votl is .votl and remains compatible with the
+existing .otl file format that VimOutliner uses.
 
 Jump to all the |votl-commands|.
 
-The votl enhancements not found in *VimOutliner* are:
+The votl enhancements not found in VimOutliner are:
 
  - Cycle over folds under the current header with <Tab>.
  - Quickly jumping between sections with the [[ ]] { } keystrokes.
@@ -124,9 +124,9 @@ When folded, preformatted body text looks something like this:
 Tables~
 
 There are two types of table formats supported by votl. The original
-*VimOutliner* format and the *RestructuredText* format.
+VimOutliner format and the RestructuredText format.
 
-The original *VimOutliner* format uses a table marker '|' to create tables.
+The original VimOutliner format uses a table marker '|' to create tables.
 The marker is used as if it were are real vertical line. A double '||'
 is optionally used to mark a table heading line which is useful for
 post-processors.
@@ -143,7 +143,7 @@ Here is an example:
 With the above format there is NO automatic alignment of columns.
 
 The other, and much better, format supported by votl is the
-*RestructuredText* format. The table above would be formatted as:
+RestructuredText format. The table above would be formatted as:
 >
     Pets
         +--------+-----+--------+----------------+
@@ -160,15 +160,15 @@ The other, and much better, format supported by votl is the
 Your first thought might be that this format would be very difficult to
 maintain by hand and you're right. Fortunately there is an awesome Vim
 plugin by Vincent Driessen that automates the table creation and flow. This
-plugin is named *vim-rst-tables* and can be downloaded from git. There is
+plugin is named vim-rst-tables and can be downloaded from git. There is
 also a nice video showing its functionality.
 >
     vim-rst-tables:  https://github.com/nvie/vim-rst-tables
     video demo:      http://vimeo.com/14300874
 <
 
-Note that the *vim-rst-tables* plugin is not automatically loaded for votl as
-the plugin keys off the *.rst* filetype. To get it to load for votl simply
+Note that the vim-rst-tables plugin is not automatically loaded for votl as
+the plugin keys off the .rst filetype. To get it to load for votl simply
 create a symlink to the plugin under votl:
 >
     Assuming the vim-rst-tables and votl plugins live in the same place:
@@ -177,8 +177,8 @@ create a symlink to the plugin under votl:
       % cd votl/ftplugin
       % ln -s ../../vim-rst-tables/ftplugin/rst_tables.vim votl_tables.vim
 <
-You could also just copy the *rst_tables.vim* to your *votl/ftplugin* directory
-and name it *votl_tables.vim* for it to get loaded.
+You could also just copy the rst_tables.vim to your votl/ftplugin directory
+and name it votl_tables.vim for it to get loaded.
 
 Regardless of the table format used the syntax coloring of the tables
 is the same for both. The color of the table "lines" is controlled
@@ -313,7 +313,7 @@ requires you have Yasuhiro Matsumoto's awesome Calendar plugin installed.
 Open up your votl file and execute ',,jc'. This will bring up the calendar.
 Type '?' to learn how to move around in the Calendar. Move the cursor over
 a date and hit <Enter>. This will jump to a special heading in your votl
-file under the top level header named *Journal* which can be located anywhere
+file under the top level header named Journal which can be located anywhere
 in the file. If this header does not exist then it will be automatically
 created at the bottom of the file. For example, assume I highlight 4/8/12
 I would end up with with the following headlines and the cursor on that day.
@@ -349,15 +349,15 @@ Now I can enter my journal/diary/meeting/notes/etc for that day.
     foo.votl -------------------------------------- [x32/d50] [10,4] [50] All
 <
 
-The *Journal* is automatically sorted in ascending order at each level (i.e.
+The Journal is automatically sorted in ascending order at each level (i.e.
 by year, then by year-month, and finally by year-month-day). Whenever you
-enter a new entry it will be inserted in the proper location in the *Journal*
+enter a new entry it will be inserted in the proper location in the Journal
 (chronological order).
 
 Additionally, the Calendar plugin will show you which days you have journal
 entries with the date being highlighted in a different color.
 
-If you would like to jump to today's *Journal* entry then execute ',,jt'
+If you would like to jump to today's Journal entry then execute ',,jt'
 which bypasses the Calendar and quickly jumps to the entry.
 
 ============================================================================
@@ -390,14 +390,14 @@ Tags can be deleted using the ',,gd' command. Any tags found on the line will
 be deleted. Additionally, you can specify a range or select a visual range to
 delete tags for multiple lines.
 
-A tag can be easily queried (i.e. grep'ed for) using the *:VotlTag* *<tag>*
+A tag can be easily queried (i.e. grep'ed for) using the :VotlTag <tag>
 command. This command searches the current buffer for the specific tag,
 creates a location list, and opens up the |location-list| window for the
 buffer.
 
-The *:VotlTag* command supports <Tab> completion for the tag name.
+The :VotlTag command supports <Tab> completion for the tag name.
 
-Example (executing *:VotlTag* *foo* to query the *foo* tag):
+Example (executing :VotlTag foo to query the foo tag):
 
   Test                                               :a:b:d:
     foo                                                :foo:
@@ -623,7 +623,7 @@ Heading colors are specified by object and level. These objects currently
 include headings, body text, user text, and tables. Other color groups
 include executables, checkboxes, percentages, and dates/times.
 
-To override the color scheme add the following to your *.vimrc* file (see
+To override the color scheme add the following to your .vimrc file (see
 |highlight| for more information) and modify as needed:
 >
     function! MyVotlColors()
@@ -682,12 +682,12 @@ Version~
         . removed the smart_paste and hoist plugins
         . incorporated the checkbox plugin as native
         . removed support for inter-outline linking
-    - new file type and extension *votl* - compatible with *otl*
+    - new file type and extension votl - compatible with otl
     - better coloring and much finer grained syntax highlighting
     - support for cycling over folds under the current header
     - support for quickly jumping between sections
     - support for tagging (like Emacs org-mode tags)
-    - support for journaling with the *Calendar.vim* Vim plugin
-    - support for RestructuredText tables with the *vim-rst-tables* Vim plugin
+    - support for journaling with the Calendar.vim Vim plugin
+    - support for RestructuredText tables with the vim-rst-tables Vim plugin
 
 vim:set filetype=help textwidth=78:
