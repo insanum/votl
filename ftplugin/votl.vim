@@ -682,6 +682,7 @@ function! VotlInsertCheckbox() "{{{
         call VotlComputeHowMuchDone(s:VotlFindRootParent(line(".")))
     endif
     silent! call repeat#set("\<Plug>VotlInsertCheckbox")
+    silent! call visualrepeat#set("\<Plug>VotlInsertCheckbox")
 endfunction "}}}
 
 " Delete a checkbox if one exists
@@ -710,6 +711,7 @@ function! VotlInsertCheckboxPercent() "{{{
         "endif
     endif
     silent! call repeat#set("\<Plug>VotlInsertCheckboxPercent")
+    silent! call visualrepeat#set("\<Plug>VotlInsertCheckboxPercent")
 endfunction "}}}
 
 " Delete a checkbox percentage if one exists
@@ -735,6 +737,7 @@ function! VotlSwitchCheckbox() "{{{
     endif
     call VotlComputeHowMuchDone(s:VotlFindRootParent(line(".")))
     silent! call repeat#set("\<Plug>VotlSwitchCheckbox")
+    silent! call visualrepeat#set("\<Plug>VotlSwitchCheckbox")
 endfunction "}}}
 
 " Calculates proportion of already done work in the subtree
