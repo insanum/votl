@@ -681,6 +681,7 @@ function! VotlInsertCheckbox() "{{{
         execute "normal! ^i[_] \<esc>^"
         call VotlComputeHowMuchDone(s:VotlFindRootParent(line(".")))
     endif
+    silent! call repeat#set("\<Plug>VotlInsertCheckbox")
 endfunction "}}}
 
 " Delete a checkbox if one exists
@@ -708,6 +709,7 @@ function! VotlInsertCheckboxPercent() "{{{
             call VotlComputeHowMuchDone(s:VotlFindRootParent(line(".")))
         "endif
     endif
+    silent! call repeat#set("\<Plug>VotlInsertCheckboxPercent")
 endfunction "}}}
 
 " Delete a checkbox percentage if one exists
@@ -732,6 +734,7 @@ function! VotlSwitchCheckbox() "{{{
         execute "normal! ^lr_^"
     endif
     call VotlComputeHowMuchDone(s:VotlFindRootParent(line(".")))
+    silent! call repeat#set("\<Plug>VotlSwitchCheckbox")
 endfunction "}}}
 
 " Calculates proportion of already done work in the subtree
@@ -973,12 +976,15 @@ nmap <silent><buffer> <localleader>jt :call VotlGotoToday()<cr>
 
 " insert/delete a checkbox and/or percentage
 map <silent><buffer> <localleader>cb :call VotlInsertCheckbox()<cr>
+noremap <silent> <Plug>VotlInsertCheckbox :call VotlInsertCheckbox()<cr>
 map <silent><buffer> <localleader>cB :call VotlDeleteCheckbox()<cr>
 map <silent><buffer> <localleader>cp :call VotlInsertCheckboxPercent()<cr>
+noremap <silent> <Plug>VotlInsertCheckboxPercent :call VotlInsertCheckboxPercent()<cr>
 map <silent><buffer> <localleader>cP :call VotlDeleteCheckboxPercent()<cr>
 
 " switch the status of the box
 map <silent><buffer> <localleader>cx :call VotlSwitchCheckbox()<cr>
+noremap <silent> <Plug>VotlSwitchCheckbox :call VotlSwitchCheckbox()<cr>
 
 " calculate the proportion of work done on the subtree
 map <silent><buffer> <localleader>cu :call VotlComputeHowMuchDone(s:VotlFindRootParent(line(".")))<cr>
