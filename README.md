@@ -303,7 +303,7 @@ requires you have Yasuhiro Matsumoto's awesome Calendar plugin installed.
     calendar: http://www.vim.org/scripts/script.php?script_id=52
 <
 
-Open up your votl file and execute ',,jc'. This will bring up the calendar.
+Open up your votl file and execute '\\jc'. This will bring up the calendar.
 Type '?' to learn how to move around in the Calendar. Move the cursor over
 a date and hit <Enter>. This will jump to a special heading in your votl
 file under the top level header named *Journal* which can be located anywhere
@@ -350,7 +350,7 @@ enter a new entry it will be inserted in the proper location in the *Journal*
 Additionally, the Calendar plugin will show you which days you have journal
 entries with the date being highlighted in a different color.
 
-If you would like to jump to today's *Journal* entry then execute ',,jt'
+If you would like to jump to today's *Journal* entry then execute '\\jt'
 which bypasses the Calendar and quickly jumps to the entry.
 
 ============================================================================
@@ -368,7 +368,7 @@ are:
 A tag is required to have a space both before the first ':' and after the
 last ':' (or be at the end of the line). Note that a tag cannot exist at
 the beginning of the line. If a tag is at the end of the line votl can easily
-right align it to the |textwidth| using the ',,gr' command. This will align
+right align it to the |textwidth| using the '\\gr' command. This will align
 the tag (if it exists) on the line under the cursor. You can also specify a
 range or select a visual range to align tags for multiple lines.
 
@@ -379,7 +379,7 @@ Example:
       bar :test:fail: geek
     doh                                           :blah:foo:
 
-Tags can be deleted using the ',,gd' command. Any tags found on the line will
+Tags can be deleted using the '\\gd' command. Any tags found on the line will
 be deleted. Additionally, you can specify a range or select a visual range to
 delete tags for multiple lines.
 
@@ -441,7 +441,7 @@ Example. Let's plan a barbecue.
 
 2. Add the check boxes.
 
-This can be done by visually selecting them and typing ',,cb'. When done
+This can be done by visually selecting them and typing '\\cb'. When done
 you should see this:
 >
     [_] Barbecue
@@ -464,8 +464,8 @@ you should see this:
 
 3. Now check off what's done.
 
-Check off what is complete with the ',,cx' command. Just place the cursor on
-a heading and ',,cx' it. Note that a heading with children will only, and
+Check off what is complete with the '\\cx' command. Just place the cursor on
+a heading and '\\cx' it. Note that a heading with children will only, and
 automatically, get checked when each of its children are complete.
 >
     [_] Barbecue
@@ -490,11 +490,11 @@ automatically, get checked when each of its children are complete.
 
 You can get a much better view of what's going on, especially with collapsed
 headings, if you add percentages. Visually select all the items and execute
-',,cp'. Note that you can manually add a percentage to single lines (i.e. a
+'\\cp'. Note that you can manually add a percentage to single lines (i.e. a
 '%' character with a single space before and after it). Put this after the
 checkbox and before the heading. Thereafter you can manually update the
-completion percentages with the ',,cu' command. Note that all the other
-',,c[bBpPx]' commands update the percentages automatically (if they exist).
+completion percentages with the '\\cu' command. Note that all the other
+'\\c[bBpPx]' commands update the percentages automatically (if they exist).
 >
     [_] 70% Barbecue
         [X] 100% Guests
@@ -516,7 +516,7 @@ completion percentages with the ',,cu' command. Note that all the other
 
 5. Complete a few more just for fun.
 
-When you ',,cx' any lines (to complete or uncomplete it) you'll see the
+When you '\\cx' any lines (to complete or uncomplete it) you'll see the
 percentages automatically recalculated in each header.
 
 ============================================================================
@@ -541,21 +541,21 @@ Movement~
 Folding~
 
   <Tab>  normal  Cycle through all tab levels under heading
-  ,,1    normal  set foldlevel=0
-  ,,2    normal  set foldlevel=1
-  ,,3    normal  set foldlevel=2
-  ,,4    normal  set foldlevel=3
-  ,,5    normal  set foldlevel=4
-  ,,6    normal  set foldlevel=5
-  ,,7    normal  set foldlevel=6
-  ,,8    normal  set foldlevel=7
-  ,,9    normal  set foldlevel=8
-  ,,0    normal  set foldlevel=99999
+  \\1    normal  set foldlevel=0
+  \\2    normal  set foldlevel=1
+  \\3    normal  set foldlevel=2
+  \\4    normal  set foldlevel=3
+  \\5    normal  set foldlevel=4
+  \\6    normal  set foldlevel=5
+  \\7    normal  set foldlevel=6
+  \\8    normal  set foldlevel=7
+  \\9    normal  set foldlevel=8
+  \\0    normal  set foldlevel=99999
 
 Calendar~
 
-  ,,jc  normal  Bring up calendar (requires calendar.vim plugin)
-  ,,jt  normal  Jump to today's journal entry
+  \\jc  normal  Bring up calendar (requires calendar.vim plugin)
+  \\jt  normal  Jump to today's journal entry
 
 Time and Date~
 
@@ -563,36 +563,36 @@ Time and Date~
   time stamp       HH:MM:SS
   date/time stamp  YYYY-MM-DD HH:MM:SS
 
-  ,,d  normal  Prepend date to heading (after any checkbox/percentage)
-  ,,D  normal  Append date to heading (before any trailing tags)
-  ,,t  normal  Prepend time to heading (after any checkbox/percentage)
-  ,,T  normal  Append time to heading (before any trailing tags)
-  ,,x  normal  Prepend date/time to heading (after any checkbox/percentage)
-  ,,X  normal  Append date/time to heading (before any trailing tags)
+  \\d  normal  Prepend date to heading (after any checkbox/percentage)
+  \\D  normal  Append date to heading (before any trailing tags)
+  \\t  normal  Prepend time to heading (after any checkbox/percentage)
+  \\T  normal  Append time to heading (before any trailing tags)
+  \\x  normal  Prepend date/time to heading (after any checkbox/percentage)
+  \\X  normal  Append date/time to heading (before any trailing tags)
 
 Checkboxes~
 
-  ,,cb  normal  Insert a checkbox on the current line or range 
-  ,,cB  normal  Delete a checkbox on the current line or range
-  ,,cp  normal  Insert a checkbox with percentage placeholder
-  ,,cP  normal  Delete a checkbox percentage on the current line or range
-  ,,cx  normal  Toggle checkbox state and update completion percentages
-  ,,cu  normal  Update completion percentages for the current tree
+  \\cb  normal  Insert a checkbox on the current line or range 
+  \\cB  normal  Delete a checkbox on the current line or range
+  \\cp  normal  Insert a checkbox with percentage placeholder
+  \\cP  normal  Delete a checkbox percentage on the current line or range
+  \\cx  normal  Toggle checkbox state and update completion percentages
+  \\cu  normal  Update completion percentages for the current tree
 
 Tags~
 
-  ,,gr  normal  Right align tags at end of line
-  ,,gr  visual  Right align tags at end of line for a range of lines
-  ,,gd  normal  Delete all tags on the line
-  ,,gd  visual  Delete all tags on the line for a range of lines
-  ,,gf  normal  Find all occurrences of the tag under the cursor
+  \\gr  normal  Right align tags at end of line
+  \\gr  visual  Right align tags at end of line for a range of lines
+  \\gd  normal  Delete all tags on the line
+  \\gd  visual  Delete all tags on the line for a range of lines
+  \\gf  normal  Find all occurrences of the tag under the cursor
 
 Formatting~
 
-  ,,s    normal  Sort children under cursor in ascending order
-  ,,S    normal  Sort children under cursor in descending order
-  ,,b    normal  Change body text start with a colon and space
-  ,,B    normal  Change body text start with a space
+  \\s    normal  Sort children under cursor in ascending order
+  \\S    normal  Sort children under cursor in descending order
+  \\b    normal  Change body text start with a colon and space
+  \\B    normal  Change body text start with a space
   >>     normal  Demote headline
   <<     normal  Promote headline
   >      visual  Demote a range of headlines
@@ -602,10 +602,10 @@ Formatting~
 
 Other~
 
-  ,,-  all     Draw dashed line
-  ,,e  normal  Execute the executable tag line under cursor
-  ,,w  insert  Save changes and return to insert mode
-  ,,W  normal  Export to HTML (foobar.votl -> foobar_votl.html)
+  \\-  all     Draw dashed line
+  \\e  normal  Execute the executable tag line under cursor
+  \\w  insert  Save changes and return to insert mode
+  \\W  normal  Export to HTML (foobar.votl -> foobar_votl.html)
 
 ============================================================================
                                                                  *votl-colors*
@@ -659,7 +659,7 @@ Highlight groups used by votl are:
                                                                    *votl-html*
 HTML~
 
-A votl file can easily be exported to HTML using the ',,W' command. This
+A votl file can easily be exported to HTML using the '\\W' command. This
 export utilizes the Vim builtin |TOhtml| exporter. The final HTML will look
 exactly like the outline text in your terminal with all folds unfolded.
 
